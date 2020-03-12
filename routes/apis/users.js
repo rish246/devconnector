@@ -66,10 +66,13 @@ router.post('/', [ requireName, requireEmail, requirePassword ], async (req, res
 		res.send('user registered');
 	} catch (err) {
 		console.error(err.message);
-		res.status(500).send('Server error');
+		return res.status(500).send('Server error');
 	}
 });
 
 module.exports = router;
 
 // we can pull this out in a separate helper functions
+
+// now since we have successfully registered in the database the response.data = token
+// state => auth => isSignedIn => true

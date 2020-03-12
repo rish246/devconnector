@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 //we are going to use express to create the api
 
 //Defining various subRouters
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 //use all the routers
 
 //Use the bodyParser => express.json({ extended: true })
+app.use(cors());
 app.use(express.json({ extended: true }));
 
 app.use('/api/users', usersRouter);

@@ -1,10 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import reduxThunk from 'redux-thunk';
 
-const App = () => {
-	return <div>Hello React App</div>;
-};
+import reducers from './reducers';
+import App from './components/App';
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+const store = createStore(reducers, composeWithDevTools(applyMiddleware(reduxThunk)));
 
-// lets install concurrently to run both node and dev server all at once
+ReactDOM.render(
+	<Provider store={store}>
+		<App />
+	</Provider>,
+	document.querySelector('#root')
+);
