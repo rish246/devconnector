@@ -111,13 +111,3 @@ const wrappedForm = reduxForm({
 })(Signup);
 
 export default connect(null, { signUpUser })(wrappedForm);
-
-// use Redux form from the
-
-// this is the wrong way of writing this form
-
-// action creator => payload => token => auth => token => isSignedIn => if(token) => isSignedIn else not
-
-// now i can make register user req using the formValues in onSubmit()
-
-// this is working pretty fine imo

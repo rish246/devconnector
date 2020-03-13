@@ -30,7 +30,7 @@ router.get('/me', auth, async (req, res) => {
 
 		if (!profile) {
 			//send a status of unauthorised access
-			return res.status(401).json({ msg: 'No profile, unauthorized access' });
+			return res.status(404).json({ msg: 'No profile, unauthorized access' });
 		}
 		// if profile exists then only populate the profile and not without that
 
@@ -76,6 +76,8 @@ router.post('/', [
 		// make entries
 		// check if object.entries => no entry
 		// check if we have value for the entry
+		console.log(skills, status);
+		// we donot have skills in this form
 
 		const profileFields = {
 			user: req.user.id,

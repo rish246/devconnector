@@ -41,7 +41,7 @@ class Login extends Component {
 			history.push('/dashboard');
 		}
 
-		// this is not working ... as we are losing our state when we are on this component
+		// this is not working ... as we are losing our state when we are on this cop
 		const { handleSubmit } = this.props;
 		return (
 			<section className="container">
