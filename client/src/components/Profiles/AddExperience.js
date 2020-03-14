@@ -4,13 +4,21 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { addExperience } from '../../actions/profiles';
 class AddExperience extends Component {
-	renderInput({ input, type, placeholder, name }) {
+	renderError = ({ touched, error }) => {
+		if (touched && error) {
+			return <div className="alert-danger ">{error}</div>;
+		}
+
+		return null;
+	};
+	renderInput = ({ input, type, placeholder, name, meta }) => {
 		return (
 			<Fragment>
 				<input {...input} type={type} placeholder={placeholder} name={name} />
+				{this.renderError(meta)}
 			</Fragment>
 		);
-	}
+	};
 
 	renderTextArea({ name, rows, cols, placeholder, input }) {
 		return (
@@ -93,10 +101,32 @@ class AddExperience extends Component {
 	}
 }
 
+const validate = ({ title, company, from }) => {
+	const errors = {};
+
+	const errorMessage = 'This field is required';
+
+	if (!title) {
+		errors.title = errorMessage;
+	}
+
+	if (!company) {
+		errors.company = errorMessage;
+	}
+
+	if (!from) {
+		errors.from = errorMessage;
+	}
+
+	console.log(errors);
+	return errors;
+};
+
 //sunday => add validation to all the forms => handle all the edge cases
 
 const wrappedForm = reduxForm({
-	form: 'addExperienceForm'
+	form: 'addExperienceForm',
+	validate
 })(AddExperience);
 export default connect(null, { addExperience })(wrappedForm);
 // add exp component table

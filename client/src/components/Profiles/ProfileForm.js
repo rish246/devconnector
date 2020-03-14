@@ -1,13 +1,23 @@
 import React, { Component, Fragment } from 'react';
 import { Field, reduxForm } from 'redux-form';
+import { Link } from 'react-router-dom';
 
 import history from '../../history';
 
 class ProfileForm extends Component {
+	renderError = ({ touched, error }) => {
+		if (touched && error) {
+			return <div className="alert-danger ">{error}</div>;
+		}
+
+		return null;
+	};
+
 	renderInput = ({ input, meta, type, placeholder, name }) => {
 		return (
 			<Fragment>
 				<input type={type} placeholder={placeholder} name={name} {...input} />
+				{this.renderError(meta)}
 			</Fragment>
 		);
 	};
@@ -16,7 +26,9 @@ class ProfileForm extends Component {
 		console.log(formValues);
 		// we have formValues ... now we can make an action creator to use the form values to make post req to the backend
 		this.props.onSubmit(formValues, this.props.edit);
-		history.push('/dashboard');
+		if (!this.props.loading) {
+			history.push('/dashboard');
+		}
 	};
 
 	render() {
@@ -101,17 +113,33 @@ class ProfileForm extends Component {
 						<Field type="text" placeholder="Instagram URL" name="instagram" component={this.renderInput} />
 					</div>
 					<input type="submit" className="btn btn-primary my-1" />
-					<a className="btn btn-light my-1" href="dashboard.html">
+					<Link className="btn btn-light my-1" to="/dashboard">
 						Go Back
-					</a>
+					</Link>
 				</form>
 			</section>
 		);
 	}
 }
 
+const validate = (values) => {
+	const errors = {};
+
+	const errorMessage = 'This field is required';
+
+	if (!values.status) {
+		errors.status = errorMessage;
+	}
+	if (!values.skills) {
+		errors.skills = errorMessage;
+	}
+	console.log(errors);
+	return errors;
+};
+
 const wrappedForm = reduxForm({
-	form: 'createProfileForm'
+	form: 'createProfileForm',
+	validate
 })(ProfileForm);
 
 export default wrappedForm;

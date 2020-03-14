@@ -66,7 +66,7 @@ router.post('/', [ requireName, requireEmail, requirePassword ], async (req, res
 		res.send('user registered');
 	} catch (err) {
 		console.error(err.message);
-		return res.status(500).send('Server error');
+		res.status(500).send('Server error');
 	}
 });
 

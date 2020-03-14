@@ -7,16 +7,23 @@ class CreateProfile extends Component {
 	render() {
 		return (
 			<Fragment>
-				<ProfileForm onSubmit={this.props.createProfile} edit={false} />
+				<ProfileForm onSubmit={this.props.createProfile} edit={true} />
 			</Fragment>
 		);
 	}
 }
 
-export default connect(null, { createProfile })(CreateProfile);
+const mapStateToProps = (state) => {
+	const { loading } = state.profile;
+	return { loading };
+};
+
+export default connect(mapStateToProps, { createProfile })(CreateProfile);
 
 // user set kar dega
 
 // refactor => profileForm => if(edit) => profileForm => values => else simple profile Form
 
 // get the profile and give the profile =>
+
+// createProfile was working before now it is not working whyy....

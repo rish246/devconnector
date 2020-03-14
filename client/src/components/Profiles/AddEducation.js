@@ -5,13 +5,21 @@ import { Link } from 'react-router-dom';
 
 import { addEducation } from '../../actions/profiles';
 class AddEducation extends Component {
-	renderInput({ input, type, placeholder, name }) {
+	renderError = ({ touched, error }) => {
+		if (touched && error) {
+			return <div className="alert-danger ">{error}</div>;
+		}
+
+		return null;
+	};
+	renderInput = ({ input, type, placeholder, name, meta }) => {
 		return (
 			<Fragment>
 				<input {...input} type={type} placeholder={placeholder} name={name} />
+				{this.renderError(meta)}
 			</Fragment>
 		);
-	}
+	};
 
 	renderTextArea({ name, rows, cols, placeholder, input }) {
 		return (
@@ -98,10 +106,37 @@ class AddEducation extends Component {
 	}
 }
 
+const validate = (values) => {
+	const errors = {};
+
+	const errorMessage = 'This field is required';
+
+	//school degree fieldOfStudy from
+	if (!values.school) {
+		errors.school = errorMessage;
+	}
+
+	if (!values.degree) {
+		errors.degree = errorMessage;
+	}
+
+	if (!values.fieldOfStudy) {
+		errors.fieldOfStudy = errorMessage;
+	}
+
+	if (!values.from) {
+		errors.from = errorMessage;
+	}
+
+	console.log(errors);
+	return errors;
+};
+
 //sunday => add validation to all the forms => handle all the edge cases
 
 const wrappedForm = reduxForm({
-	form: 'addEducationForm'
+	form: 'addEducationForm',
+	validate
 })(AddEducation);
 export default connect(null, { addEducation })(wrappedForm);
 // add exp component table

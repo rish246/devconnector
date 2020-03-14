@@ -1,9 +1,9 @@
 // this component will render the navbar on the top of every component
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
-import { loadUser } from '../../actions/auth';
+import { loadUser, SignOutUser } from '../../actions/auth';
 class Header extends Component {
 	componentDidMount() {
 		this.props.loadUser();
@@ -35,7 +35,7 @@ class Header extends Component {
 		return (
 			<nav class="navbar bg-dark">
 				<h1>
-					<Link to="/">
+					<Link to="/dashboard">
 						<i class="fas fa-code" /> DevConnector
 					</Link>
 				</h1>
@@ -54,10 +54,8 @@ class Header extends Component {
 						</Link>
 					</li>
 					<li>
-						<Link to="/login" title="Logout">
-							<i class="fas fa-sign-out-alt" />
-							<span class="hide-sm">Logout</span>
-						</Link>
+						<button onClick={() => this.props.SignOutUser()}>Logout</button>
+						<Redirect to="/login" />
 					</li>
 				</ul>
 			</nav>
@@ -74,8 +72,10 @@ const mapStateToProps = (state) => {
 	return { isAuthenticated };
 };
 
-export default connect(mapStateToProps, { loadUser })(Header);
+export default connect(mapStateToProps, { loadUser, SignOutUser })(Header);
 
 // start working on the header => the header should include
 
 //fetch a user => if(user) => then we will render the auth navbar else
+
+// my onSubmit is not working now so the profiles are not getting stored in the manner they should

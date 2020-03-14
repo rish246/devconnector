@@ -2,7 +2,15 @@
 import axios from 'axios';
 
 import server from '../apis/server';
-import { PROFILE_ERROR, GET_PROFILE, UPDATE_LIKES, GET_PROFILES, GET_REPOS } from './types';
+import {
+	PROFILE_ERROR,
+	GET_PROFILE,
+	UPDATE_LIKES,
+	GET_PROFILES,
+	GET_REPOS,
+	CLEAR_PROFILE,
+	ACCOUNT_DELETED
+} from './types';
 import setAuthToken from '../utils/setAuthToken';
 import history from '../history';
 
@@ -39,6 +47,7 @@ export const fetchMyProfile = () => async (dispatch) => {
 // profile => me => response.status => if response.status => 404 => createProfile => profileInfo
 
 export const createProfile = (formValues, edit = false) => async (dispatch) => {
+	console.log('creating a new profile');
 	// load user =>
 	const config = {
 		headers: {
@@ -50,20 +59,26 @@ export const createProfile = (formValues, edit = false) => async (dispatch) => {
 
 	// basically i am not sending any data to th ea
 	try {
+		console.log('inside the try block');
+
 		const response = await server.post('/profiles', formValues, config);
+		console.log(response.data);
 
 		dispatch({
 			type: GET_PROFILE,
 			payload: response.data
 		});
-
-		history.push('/dashboard');
+		if (!edit) {
+			history.push('/dashboard');
+		}
 	} catch (err) {
 		dispatch({
 			type: PROFILE_ERROR,
 			payload: { msg: err.message }
 		});
 	}
+
+	console.log('dispatched to the reducer');
 };
 
 // i have to tell that if the request is meant to edit the profile or to create a new one
@@ -167,24 +182,19 @@ export const deleteEducation = (eduId) => async (dispatch) => {
 
 // delete profile
 
-export const deleteProfile = (profileId) => async (dispatch) => {
-	setAuthToken(localStorage.token);
+export const deleteProfile = () => async (dispatch) => {
+	if (window.confirm('Are you sure? This can NOT be undone!')) {
+		try {
+			await axios.delete('/api/profiles');
 
-	try {
-		//anyways i will copy paste my errors from the devconnector file
-		const response = await server.delete(`/profiles/${profileId}`);
-
-		dispatch({
-			type: GET_PROFILE,
-			payload: response.data
-		});
-
-		history.push('/dashboard');
-	} catch (err) {
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: { msg: err.message }
-		});
+			dispatch({ type: CLEAR_PROFILE });
+			dispatch({ type: ACCOUNT_DELETED });
+		} catch (err) {
+			dispatch({
+				type: PROFILE_ERROR,
+				payload: { msg: err.response.statusText, status: err.response.status }
+			});
+		}
 	}
 };
 
