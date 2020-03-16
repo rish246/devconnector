@@ -23,7 +23,7 @@ class Education extends Component {
 					<td>{school}</td>
 					<td className="hide-sm">{degree}</td>
 					<td className="hide-sm">
-						{from} - {to}
+						{from} - {to ? to : 'current'}
 					</td>
 					<td>
 						<button className="btn btn-danger" onClick={() => this.props.deleteEducation(_id)}>
@@ -45,12 +45,12 @@ class Education extends Component {
 					<thead>
 						<tr>
 							<th>School</th>
-							<th className="hide-sm">Degree</th>
-							<th className="hide-sm">Years</th>
+							<th class="hide-sm">Degree</th>
+							<th class="hide-sm">Years</th>
 							<th />
 						</tr>
 					</thead>
-					<div>{this.renderEducation()}</div>
+					{this.renderEducation()}
 				</table>
 			</div>
 		);

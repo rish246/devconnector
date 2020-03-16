@@ -80,7 +80,8 @@ export const signInUser = ({ email, password }) => async (dispatch) => {
 		}
 
 		dispatch({
-			type: LOGIN_FAIL
+			type: LOGIN_FAIL,
+			payload: err.response.data.errors
 		});
 	}
 };
@@ -120,6 +121,15 @@ export const SignOutUser = () => async (dispatch) => {
 
 	dispatch({ type: LOGOUT });
 	dispatch({ type: CLEAR_PROFILE });
+
+	// clear profile
+	// clear the user
+
+	history.push('/');
 };
 
 // why clear profile => we dont know
+
+// onSubmit => check the value of error in the state
+
+// onSubmit => profile.error field have the error message

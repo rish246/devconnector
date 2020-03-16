@@ -49,37 +49,77 @@ export const fetchMyProfile = () => async (dispatch) => {
 export const createProfile = (formValues, edit = false) => async (dispatch) => {
 	console.log('creating a new profile');
 	// load user =>
-	const config = {
-		headers: {
-			'Content-type': 'application/json'
-		}
-	};
-
-	setAuthToken(localStorage.token);
 
 	// basically i am not sending any data to th ea
 	try {
 		console.log('inside the try block');
+		const config = {
+			headers: {
+				'Content-type': 'application/json'
+			}
+		};
 
-		const response = await server.post('/profiles', formValues, config);
+		// setAuthToken(localStorage.token);
+		axios.defaults.headers.common['x-auth-token'] = localStorage.token;
+
+		const response = await axios.post('http://localhost:5000/api/profiles', formValues, config);
 		console.log(response.data);
 
 		dispatch({
 			type: GET_PROFILE,
 			payload: response.data
 		});
-		if (!edit) {
-			history.push('/dashboard');
-		}
+
+		history.push('/dashboard');
 	} catch (err) {
+		console.log(err);
 		dispatch({
 			type: PROFILE_ERROR,
-			payload: { msg: err.message }
+			payload: err
 		});
 	}
 
 	console.log('dispatched to the reducer');
 };
+
+// export const createProfile = (
+// 	formData,
+// 	edit = false
+//   ) => async dispatch => {
+// 	try {
+// 	  const config = {
+// 		headers: {
+// 		  'Content-Type': 'application/json'
+// 		}
+// 	  };
+//setAuthToken(localStorage.token);
+//
+
+// 	  const res = await axios.post('/api/profile', formData, config);
+
+// 	  dispatch({
+// 		type: GET_PROFILE,
+// 		payload: res.data
+// 	  });
+
+// 	  dispatch(setAlert(edit ? 'Profile Updated' : 'Profile Created', 'success'));
+
+// 	  if (!edit) {
+// 		history.push('/dashboard');
+// 	  }
+// 	} catch (err) {
+// 	  const errors = err.response.data.errors;
+
+// 	  if (errors) {
+// 		errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+// 	  }
+
+// 	  dispatch({
+// 		type: PROFILE_ERROR,
+// 		payload: { msg: err.response.statusText, status: err.response.status }
+// 	  });
+// 	}
+//   };
 
 // i have to tell that if the request is meant to edit the profile or to create a new one
 

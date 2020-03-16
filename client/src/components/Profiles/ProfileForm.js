@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-import history from '../../history';
+import { createProfile } from '../../actions/profiles';
 
 class ProfileForm extends Component {
 	renderError = ({ touched, error }) => {
@@ -22,13 +23,19 @@ class ProfileForm extends Component {
 		);
 	};
 
+	renderTextArea = ({ input, name, placeholder, meta }) => {
+		return (
+			<Fragment>
+				<textarea placeholder={placeholder} name={name} {...input} />
+				{this.renderError(meta)}
+			</Fragment>
+		);
+	};
+
 	onSubmit = (formValues) => {
 		console.log(formValues);
 		// we have formValues ... now we can make an action creator to use the form values to make post req to the backend
-		this.props.onSubmit(formValues, this.props.edit);
-		if (!this.props.loading) {
-			history.push('/dashboard');
-		}
+		this.props.createProfile(formValues, this.props.edit);
 	};
 
 	render() {
@@ -77,7 +84,7 @@ class ProfileForm extends Component {
 						</small>
 					</div>
 					<div className="form-group">
-						<Field placeholder="A short bio of yourself" name="bio" component={this.renderInput} />
+						<Field placeholder="A short bio of yourself" name="bio" component={this.renderTextArea} />
 						<small className="form-text">Tell us a little about yourself</small>
 					</div>
 
@@ -137,13 +144,17 @@ const validate = (values) => {
 	return errors;
 };
 
+const mapStateToProps = (state) => {
+	console.log(state);
+	const { profile, loading } = state.profile;
+	return { profile, loading };
+};
+
 const wrappedForm = reduxForm({
 	form: 'createProfileForm',
 	validate
 })(ProfileForm);
 
-export default wrappedForm;
+export default connect(mapStateToProps, { createProfile })(wrappedForm);
 
-// user set kar dega
-
-// refactor => profileForm => if(edit) => profileForm => values => else simple profile Form
+// rendering alert message is the last messages

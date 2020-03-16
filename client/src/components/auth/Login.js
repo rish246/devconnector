@@ -2,15 +2,24 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import history from '../../history';
 import { signInUser } from '../../actions/auth';
-import { Link } from 'react-router-dom';
+import renderAlert from '../../utils/renderAlert';
 
 class Login extends Component {
 	// in the begining -- we have not put anything in the credentials
+
+	renderAlert = () => {
+		if (!this.props.isAuthenticated) {
+			return <div>Invalid Credentials</div>;
+		}
+
+		return null;
+	};
+
 	renderError = ({ touched, error }) => {
-		console.log(this);
 		if (touched && error) {
 			return <div className="alert-danger ">{error}</div>;
 		}
@@ -19,7 +28,6 @@ class Login extends Component {
 	};
 	renderInput = ({ input, type, placeholder, name, meta }) => {
 		//render the input Field
-		console.log(meta);
 		return (
 			<div className="form-group">
 				<input type={type} placeholder={placeholder} name={name} {...input} />
@@ -28,9 +36,22 @@ class Login extends Component {
 		);
 	};
 
-	onSubmit = (formValues) => {
-		console.log(formValues);
+	// renderAlert = () => {
+	// 	if (!this.props.alert) {
+	// 		return null;
+	// 	}
+	// 	const renderAlert = this.props.alert.map(({ msg, alertType, id }) => {
+	// 		console.log(alertType);
+	// 		return (
+	// 			<div key={id}>
+	// 				<h2 className={`alert-${alertType}`}>{msg}</h2>
+	// 			</div>
+	// 		);
+	// 	});
+	// 	return renderAlert;
+	// };
 
+	onSubmit = (formValues) => {
 		this.props.signInUser(formValues);
 	};
 
@@ -43,12 +64,14 @@ class Login extends Component {
 
 		// this is not working ... as we are losing our state when we are on this cop
 		const { handleSubmit } = this.props;
+
 		return (
 			<section className="container">
 				<h1 className="large text-primary">Sign In</h1>
 				<p className="lead">
 					<i className="fas fa-user" /> Sign into Your Account
 				</p>
+				{renderAlert(this.props.alert)}
 				<form className="form" onSubmit={handleSubmit(this.onSubmit)}>
 					{/* <div className="form-group">
 						<input type="password" placeholder="Password" name="password" />
@@ -58,7 +81,7 @@ class Login extends Component {
 					<input type="submit" className="btn btn-primary" value="Login" />
 				</form>
 				<p className="my-1">
-					Don't have an account? <Link href="/signup">Sign Up</Link>
+					Don't have an account? <Link to="/signup">Sign Up</Link>
 				</p>
 			</section>
 		);
@@ -84,8 +107,10 @@ const validate = (values) => {
 };
 
 const mapStateToProps = (state) => {
-	const { isAuthenticated } = state.auth;
-	return { isAuthenticated };
+	const { isAuthenticated, error } = state.auth;
+
+	const alert = state.alert;
+	return { isAuthenticated, error, alert };
 };
 
 const wrappedForm = reduxForm({

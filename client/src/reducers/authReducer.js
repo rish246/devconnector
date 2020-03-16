@@ -1,11 +1,12 @@
-import { REGISTER_SUCCESS, LOGIN_SUCCESS, USER_LOADED, LOGOUT } from '../actions/types';
+import { REGISTER_SUCCESS, LOGIN_SUCCESS, USER_LOADED, LOGOUT, LOGIN_FAIL } from '../actions/types';
 
 //define your initial state for the auth
 const INITIAL_STATE = {
 	isAuthenticated: null,
 	token: localStorage.getItem('token'),
 	loading: true,
-	user: null
+	user: null,
+	error: {}
 };
 
 // this is the initial state => isAuthenticated => token => loading ('is the process is loading ', Show the loader if this is true, Maybe )=> user => userId
@@ -22,6 +23,16 @@ const authReducer = (state = INITIAL_STATE, action) => {
 			return { ...state, user: action.payload, isAuthenticated: true, loading: false }; // we set the user to the userId => use this user id to make various requests
 		case LOGOUT:
 			return { ...state, user: null, token: undefined, loading: false, isAuthenticated: false };
+
+		case LOGIN_FAIL:
+			return {
+				...state,
+				user: null,
+				token: undefined,
+				loading: false,
+				isAuthenticated: false,
+				error: action.payload
+			};
 
 		default:
 			return state;

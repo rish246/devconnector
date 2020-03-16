@@ -54,7 +54,9 @@ class Header extends Component {
 						</Link>
 					</li>
 					<li>
-						<button onClick={() => this.props.SignOutUser()}>Logout</button>
+						<button className="btn btn-light" onClick={() => this.props.SignOutUser()}>
+							<span class="hide-sm">Logout</span>
+						</button>
 						<Redirect to="/login" />
 					</li>
 				</ul>

@@ -2,23 +2,17 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 
 import ProfileForm from './ProfileForm';
-import { createProfile } from '../../actions/profiles';
 class CreateProfile extends Component {
 	render() {
 		return (
 			<Fragment>
-				<ProfileForm onSubmit={this.props.createProfile} edit={true} />
+				<ProfileForm />
 			</Fragment>
 		);
 	}
 }
 
-const mapStateToProps = (state) => {
-	const { loading } = state.profile;
-	return { loading };
-};
-
-export default connect(mapStateToProps, { createProfile })(CreateProfile);
+export default connect(null)(CreateProfile);
 
 // user set kar dega
 

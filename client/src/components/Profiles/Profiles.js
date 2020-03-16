@@ -47,24 +47,7 @@ class Profiles extends Component {
 							</Link>
 						</div>
 
-						<ul>
-							{/* <li class="text-primary">
-							<i class="fas fa-check" /> HTML
-						</li>
-						<li class="text-primary">
-							<i class="fas fa-check" /> CSS
-						</li>
-						<li class="text-primary">
-							<i class="fas fa-check" /> JavaScript
-						</li>
-						<li class="text-primary">
-							<i class="fas fa-check" /> Python
-						</li>
-						<li class="text-primary">
-							<i class="fas fa-check" /> C#
-						</li> */}
-							{this.renderSkills(skills)}
-						</ul>
+						<ul>{this.renderSkills(skills)}</ul>
 					</div>
 				);
 			}

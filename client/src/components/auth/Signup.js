@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 // get the action creator
 import { signUpUser } from '../../actions/auth';
+import renderAlert from '../../utils/renderAlert';
 class Signup extends Component {
 	//make a component to render the input
 
@@ -45,6 +46,8 @@ class Signup extends Component {
 					<p className="lead">
 						<i className="fas fa-user" /> Create Your Account
 					</p>
+
+					{renderAlert(this.props.alert)}
 					<form className="form" onSubmit={handleSubmit(this.onSubmit)}>
 						<Field type="text" placeholder="Name" name="name" component={this.renderInput} />
 
@@ -105,9 +108,18 @@ const validate = (values) => {
 	return errors;
 };
 
+const mapStateToProps = (state) => {
+	const { alert } = state;
+	return { alert };
+};
+
 const wrappedForm = reduxForm({
 	form: 'signUpForm',
 	validate
 })(Signup);
 
-export default connect(null, { signUpUser })(wrappedForm);
+export default connect(mapStateToProps, { signUpUser })(wrappedForm);
+
+// this was a nice strat to store the alerts in the reducer and to fetch them afterwards
+
+// tomorrow => we will start working on the posts action creator, reducer and posts components

@@ -50,7 +50,7 @@ router.post('/', [
 	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: [ errors.array() ] }); // these are the errors from the check
+			return res.status(400).json({ errors: errors.array() }); // these are the errors from the check
 		}
 
 		// profile will have all these fields
@@ -89,7 +89,7 @@ router.post('/', [
 			githubusername,
 
 			//skills = html, css, js => split => ['html', ' css', ' js'] => map and trim => ['html', 'css', 'js']
-			skills: skills.split(',').map((skill) => skill.trim())
+			skills: Array.isArray(skills) ? skills : skills.split(',').map((skill) => ' ' + skill.trim())
 		};
 		const socials = { twitter, youtube, instagram, facebook, linkedin };
 		profileFields.socials = socials;

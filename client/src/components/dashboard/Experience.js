@@ -11,7 +11,7 @@ class Experience extends Component {
 
 	renderExperience() {
 		// render the elements of this.props.education => array
-		console.log(this.props._id);
+		console.log(this.props.experience._id);
 		if (!this.props.experience) {
 			return null;
 		}
@@ -21,7 +21,7 @@ class Experience extends Component {
 					<td className="hide-sm">{company}</td>
 					<td>{title}</td>
 					<td className="hide-sm">
-						{from} - {to}
+						{from} - {to || 'current'}
 					</td>
 
 					<td>
