@@ -1,12 +1,26 @@
 const express = require('express');
 const { validationResult } = require('express-validator');
 
+//profile.user === auth.user => render a delete button
 const auth = require('../helpers/middlewares/auth');
 const Post = require('../../models/Post');
 const User = require('../../models/Users');
 const Profile = require('../../models/Profile');
 const { requireText } = require('../helpers/validators');
 const router = express.Router();
+
+// @route    GET api/posts
+// @desc     Get all posts
+// @access   Private
+router.get('/', auth, async (req, res) => {
+	try {
+		const posts = await Post.find().sort({ date: -1 });
+		res.json(posts);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send('Server Error');
+	}
+});
 
 // @router      POST apis/posts
 // @desc        adding new POSTS
@@ -43,7 +57,8 @@ router.post('/', [ auth, [ requireText ] ], async (req, res) => {
 router.get('/:postId', auth, async (req, res) => {
 	try {
 		// try to get all posts
-		const post = await Post.findById(req.params.postId); // we have stored user and pw in this as well
+		const post = await Post.findById(req.params.postId);
+		console.log(post); // we have stored user and pw in this as well
 
 		if (!post) {
 			return res.status(404).json({ msg: 'Post not found ' });
@@ -59,26 +74,30 @@ router.get('/:postId', auth, async (req, res) => {
 	}
 });
 
-// @router      DELETE apis/posts/:postId
-// @desc        delete a post
-// @access      PRIVATE
-router.delete('/:postId', auth, async (req, res) => {
-	// get the post by post id and check if the user === req.user.id
+// @route    DELETE api/posts/:id
+// @desc     Delete a post
+// @access   Private
+router.delete('/:id', auth, async (req, res) => {
 	try {
-		const post = await Post.findById(postId);
-		if (post.user != req.user.id) {
-			return res.status(400).send('Invalid operation, you cannot delete this post');
+		const post = await Post.findById(req.params.id);
+
+		// Check for ObjectId format and post
+		if (!req.params.id.match(/^[0-9a-fA-F]{24}$/) || !post) {
+			return res.status(404).json({ msg: 'Post not found' });
 		}
 
-		// if the post is getting deleted by the user creating the post
+		// Check user
+		if (post.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' });
+		}
+
 		await post.remove();
+
 		res.json({ msg: 'Post removed' });
 	} catch (err) {
-		console.error(error.message);
-		if (error.kind === 'ObjectId') {
-			return res.status(404).json({ msg: 'Post not found ' });
-		}
-		res.status(500).send('Server error');
+		console.error(err.message);
+
+		res.status(500).send('Server Error');
 	}
 });
 
@@ -159,9 +178,11 @@ router.put('/unlike/:postId', auth, async (req, res) => {
 // @desc        leave a comment on the post
 // @access      PRIVATE
 router.put('/comment/:postId', [ auth, [ requireText ] ], async (req, res) => {
+	console.log(req.params.postId);
 	try {
 		// get the post with the id
 		const post = await Post.findById(req.params.postId);
+		console.log(post);
 
 		// get the body of the text from req.body
 		const { text } = req.body;

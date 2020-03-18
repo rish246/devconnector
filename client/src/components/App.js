@@ -13,6 +13,8 @@ import AddExperience from './Profiles/AddExperience'; // add exp form
 import AddEducation from './Profiles/AddEducation'; // add edu form
 import Profiles from './Profiles/Profiles';
 import ShowProfile from './Profiles/ShowProfile';
+import PostDiscussion from './posts/PostDiscussion';
+import Posts from './posts/Posts';
 class App extends React.Component {
 	render() {
 		return (
@@ -31,6 +33,9 @@ class App extends React.Component {
 						<Route path="/education/new" exact component={AddEducation} />
 						<Route path="/profiles" exact component={Profiles} />
 						<Route path="/profiles/:id" exact component={ShowProfile} />
+
+						<Route path="/posts" exact component={Posts} />
+						<Route path="/posts/:postId" exact component={PostDiscussion} />
 					</section>
 				</Router>
 			</div>
