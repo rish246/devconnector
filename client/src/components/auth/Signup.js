@@ -20,7 +20,6 @@ class Signup extends Component {
 
 	renderInput = ({ input, type, name, placeholder, minLength, meta }) => {
 		// it returns the input
-		console.log(meta);
 		return (
 			<div className="form-group">
 				<input type={type} placeholder={placeholder} name={name} minLength={minLength} {...input} />
@@ -33,7 +32,6 @@ class Signup extends Component {
 
 	onSubmit = (formValues) => {
 		// i have the formValues now i can make the use of an action creator to register the user to our server
-		console.log(formValues);
 		this.props.signUpUser(formValues);
 	};
 
@@ -82,7 +80,6 @@ class Signup extends Component {
 
 const validate = (values) => {
 	const errors = {};
-	console.log(values.password2);
 
 	const errorMessage = 'This field is required';
 	if (!values.name) {

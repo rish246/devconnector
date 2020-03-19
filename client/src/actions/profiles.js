@@ -2,15 +2,7 @@
 import axios from 'axios';
 
 import server from '../apis/server';
-import {
-	PROFILE_ERROR,
-	GET_PROFILE,
-	UPDATE_LIKES,
-	GET_PROFILES,
-	GET_REPOS,
-	CLEAR_PROFILE,
-	ACCOUNT_DELETED
-} from './types';
+import { PROFILE_ERROR, GET_PROFILE, GET_PROFILES, GET_REPOS, CLEAR_PROFILE, ACCOUNT_DELETED } from './types';
 import setAuthToken from '../utils/setAuthToken';
 import history from '../history';
 
@@ -82,48 +74,6 @@ export const createProfile = (formValues, edit = false) => async (dispatch) => {
 	console.log('dispatched to the reducer');
 };
 
-// export const createProfile = (
-// 	formData,
-// 	edit = false
-//   ) => async dispatch => {
-// 	try {
-// 	  const config = {
-// 		headers: {
-// 		  'Content-Type': 'application/json'
-// 		}
-// 	  };
-//setAuthToken(localStorage.token);
-//
-
-// 	  const res = await axios.post('/api/profile', formData, config);
-
-// 	  dispatch({
-// 		type: GET_PROFILE,
-// 		payload: res.data
-// 	  });
-
-// 	  dispatch(setAlert(edit ? 'Profile Updated' : 'Profile Created', 'success'));
-
-// 	  if (!edit) {
-// 		history.push('/dashboard');
-// 	  }
-// 	} catch (err) {
-// 	  const errors = err.response.data.errors;
-
-// 	  if (errors) {
-// 		errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-// 	  }
-
-// 	  dispatch({
-// 		type: PROFILE_ERROR,
-// 		payload: { msg: err.response.statusText, status: err.response.status }
-// 	  });
-// 	}
-//   };
-
-// i have to tell that if the request is meant to edit the profile or to create a new one
-
-//
 export const addExperience = (formValues) => async (dispatch) => {
 	const config = {
 		headers: {
@@ -248,6 +198,9 @@ export const getAllProfiles = () => async (dispatch) => {
 			type: GET_PROFILES,
 			payload: response.data
 		});
+
+		//redirect to /profiels
+		history.push('/profiles');
 	} catch (err) {
 		dispatch({
 			type: PROFILE_ERROR,

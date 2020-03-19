@@ -18,6 +18,10 @@ export const getPosts = () => async (dispatch) => {
 			type: GET_POSTS,
 			payload: response.data
 		});
+
+		//when this happens we redirect to posts
+
+		history.push('/posts');
 	} catch (error) {
 		console.log(error);
 	}
@@ -107,7 +111,7 @@ export const unlikePost = (postId) => async (dispatch) => {
 			payload: response.data
 		});
 
-		dispatch(getPosts());
+		dispatch(getPost(postId));
 	} catch (error) {
 		console.log(error);
 	}

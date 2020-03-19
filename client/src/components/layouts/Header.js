@@ -75,9 +75,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, { loadUser, SignOutUser })(Header);
-
-// start working on the header => the header should include
-
-//fetch a user => if(user) => then we will render the auth navbar else
-
-// my onSubmit is not working now so the profiles are not getting stored in the manner they should

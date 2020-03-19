@@ -26,6 +26,7 @@ class PostList extends Component {
 	};
 
 	renderPosts = () => {
+		// we have to fetch the posts and then render the posts
 		return this.props.posts.map((post) => {
 			return (
 				<div className="post bg-white p-1 my-1">

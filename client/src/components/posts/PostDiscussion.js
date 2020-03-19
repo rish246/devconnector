@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
 
-import { getPosts, addComment } from '../../actions/posts';
+import { getPosts, addComment, getPost } from '../../actions/posts';
 import Spinner from '../layouts/Spinner';
 
 class PostDiscussion extends Component {
@@ -112,7 +112,7 @@ const mapStateToProps = (state, ownProps) => {
 const wrappedForm = reduxForm({
 	form: 'commentForm'
 })(PostDiscussion);
-export default connect(mapStateToProps, { getPosts, addComment })(wrappedForm);
+export default connect(mapStateToProps, { getPosts, addComment, getPost })(wrappedForm);
 
 //this is the last page that i am going to make for this project
 // start learning node.js and mongoDB

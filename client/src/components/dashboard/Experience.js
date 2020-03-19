@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 // fetchMyProfile()
@@ -11,7 +11,6 @@ class Experience extends Component {
 
 	renderExperience() {
 		// render the elements of this.props.education => array
-		console.log(this.props.experience._id);
 		if (!this.props.experience) {
 			return null;
 		}

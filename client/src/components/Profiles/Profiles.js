@@ -20,14 +20,6 @@ class Profiles extends Component {
 	}
 
 	renderProfiles = () => {
-		if (!Object.keys(this.props.profiles).length) {
-			return (
-				<Fragment>
-					<Spinner />
-				</Fragment>
-			);
-		}
-
 		const renderProfiles = this.props.profiles.map(
 			({ user, status, bio, company, location, website, _id, skills }) => {
 				if (!user) return null;
@@ -56,6 +48,15 @@ class Profiles extends Component {
 		return renderProfiles;
 	};
 	render() {
+		if (!this.props.profiles) {
+			return (
+				<Fragment>
+					<Spinner />
+				</Fragment>
+			);
+		}
+
+		console.log(this.props.profiles);
 		return <div className="profiles">{this.renderProfiles()}</div>;
 	}
 }

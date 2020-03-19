@@ -51,26 +51,23 @@ router.post('/', [ auth, [ requireText ] ], async (req, res) => {
 	}
 });
 
-// @router      GET apis/posts
-// @desc        get all posts
-// @access      PRIVATE
+// @route    GET api/posts/:id
+// @desc     Get post by ID
+// @access   Private
 router.get('/:postId', auth, async (req, res) => {
 	try {
-		// try to get all posts
 		const post = await Post.findById(req.params.postId);
-		console.log(post); // we have stored user and pw in this as well
 
-		if (!post) {
-			return res.status(404).json({ msg: 'Post not found ' });
+		// Check for ObjectId format and post
+		if (!req.params.id.match(/^[0-9a-fA-F]{24}$/) || !post) {
+			return res.status(404).json({ msg: 'Post not found' });
 		}
 
 		res.json(post);
-	} catch (error) {
-		console.error(error.message);
-		if (error.kind === 'ObjectId') {
-			return res.status(404).json({ msg: 'Post not found ' });
-		}
-		res.status(500).send('Server error');
+	} catch (err) {
+		console.error(err.message);
+
+		res.status(500).send('Server Error');
 	}
 });
 

@@ -36,21 +36,6 @@ class Login extends Component {
 		);
 	};
 
-	// renderAlert = () => {
-	// 	if (!this.props.alert) {
-	// 		return null;
-	// 	}
-	// 	const renderAlert = this.props.alert.map(({ msg, alertType, id }) => {
-	// 		console.log(alertType);
-	// 		return (
-	// 			<div key={id}>
-	// 				<h2 className={`alert-${alertType}`}>{msg}</h2>
-	// 			</div>
-	// 		);
-	// 	});
-	// 	return renderAlert;
-	// };
-
 	onSubmit = (formValues) => {
 		this.props.signInUser(formValues);
 	};
@@ -102,7 +87,6 @@ const validate = (values) => {
 		errors.password = errorMessage;
 	}
 
-	console.log(errors);
 	return errors;
 };
 
