@@ -14,6 +14,9 @@ const { requireEmail, requireName, requirePassword } = require('../helpers/valid
 // @access   Public
 router.post('/', [ requireName, requireEmail, requirePassword ], async (req, res) => {
 	const errors = validationResult(req);
+	console.log({
+		errors
+	})
 	if (!errors.isEmpty()) {
 		return res.status(400).json({ errors: errors.array() });
 	}
@@ -43,9 +46,10 @@ router.post('/', [ requireName, requireEmail, requirePassword ], async (req, res
 			password
 		});
 
-		const salt = await bcrypt.genSalt(10);
+		// const salt = await bcrypt.genSalt(10);
 
-		user.password = await bcrypt.hash(password, salt);
+		// user.password = await bcrypt.hash(password, salt);
+		user.password = password;
 
 		// time to implement the jason web token in the next video
 

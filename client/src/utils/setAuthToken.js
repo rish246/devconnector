@@ -1,6 +1,7 @@
 import axios from 'axios';
 import server from '../apis/server';
 const setAuthToken = (token) => {
+	console.log({ token })
 	if (token) {
 		server.defaults.headers.common['x-auth-token'] = token;
 	}

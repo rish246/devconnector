@@ -47,7 +47,8 @@ router.post('/', [ requireEmail, validatePassword ], async (req, res) => {
 		}
 		// we have the user
 
-		const isMatch = await bcrypt.compare(password, user.password);
+		// const isMatch = await bcrypt.compare(password, user.password);
+		const isMatch = password === user.password;
 		if (!isMatch) {
 			return res.status(400).json({ errors: [ { msg: 'Invalid email or password' } ] });
 		}
@@ -76,4 +77,3 @@ router.post('/', [ requireEmail, validatePassword ], async (req, res) => {
 
 module.exports = router;
 
-// i have the error... cannot set headers once they are sent to the client

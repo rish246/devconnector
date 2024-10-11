@@ -9,8 +9,9 @@ import { Link } from 'react-router-dom';
 class ShowProfile extends Component {
 	componentDidMount() {
 		// get profile by id
+		// console.log(this.props)
+		console.log('Mounted Component')
 		this.props.getProfileById(this.props.match.params.id);
-
 		// make another action creator to get the github profiles of the user
 	}
 
@@ -70,40 +71,41 @@ class ShowProfile extends Component {
 		});
 	}
 
-	getGitRepos(username) {
-		this.props.getGitRepos(username);
-	}
+	// getGitRepos(username) {
+	// 	this.props.getGitRepos(username);
+	// }
 
-	renderGitRepos(username) {
-		this.getGitRepos(username); // make changes to redux store and now we will have
+	// renderGitRepos(username) {
+	// 	this.getGitRepos(username); // make changes to redux store and now we will have
 
-		if (!this.props.repos.length) return null;
+	// 	if (!this.props.repos.length) return null;
 
-		return this.props.repos.map(({ name, stargazers_count, watchers_count, forks_count }, idx) => {
-			return (
-				<div class="repo bg-white p-1 my-1">
-					<div>
-						<h4>
-							<a href="#" target="_blank" rel="noopener noreferrer">
-								Repo {idx + 1}
-							</a>
-						</h4>
-						<p>{name}</p>
-					</div>
-					<div>
-						<ul>
-							<li class="badge badge-primary">Stars: {stargazers_count}</li>
-							<li class="badge badge-dark">Watchers: {watchers_count}</li>
-							<li class="badge badge-light">Forks: {forks_count}</li>
-						</ul>
-					</div>
-				</div>
-			);
-		});
-	}
+	// 	return this.props.repos.map(({ name, stargazers_count, watchers_count, forks_count }, idx) => {
+	// 		return (
+	// 			<div class="repo bg-white p-1 my-1">
+	// 				<div>
+	// 					<h4>
+	// 						<a href="#" target="_blank" rel="noopener noreferrer">
+	// 							Repo {idx + 1}
+	// 						</a>
+	// 					</h4>
+	// 					<p>{name}</p>
+	// 				</div>
+	// 				<div>
+	// 					<ul>
+	// 						<li class="badge badge-primary">Stars: {stargazers_count}</li>
+	// 						<li class="badge badge-dark">Watchers: {watchers_count}</li>
+	// 						<li class="badge badge-light">Forks: {forks_count}</li>
+	// 					</ul>
+	// 				</div>
+	// 			</div>
+	// 		);
+	// 	});
+	// }
 
 	renderSocials(socials) {}
 	renderProfile() {
+		console.log(this.profile)
 		if (!Object.keys(this.props.profile).length) {
 			return (
 				<Fragment>
@@ -189,7 +191,7 @@ class ShowProfile extends Component {
 							<i class="fab fa-github" /> Github Repos
 						</h2>
 
-						{this.renderGitRepos(githubusername)}
+						{/* {this.renderGitRepos(githubusername)} */}
 					</div>
 				</div>
 			</section>
@@ -197,16 +199,20 @@ class ShowProfile extends Component {
 	} //use this.props.profile
 
 	render() {
+		if (!this.props.profile) {
+			return <Spinner />
+		}
 		return <div>{this.renderProfile()}</div>;
 	}
 }
 
 const mapStateToProps = (state) => {
 	const { profile, repos } = state.profile;
+	console.log({ profile });
 	return { profile, repos };
 };
 
-export default connect(mapStateToProps, { getProfileById, getGitRepos })(ShowProfile);
+export default connect(mapStateToProps, { getProfileById })(ShowProfile);
 // specific dev's profile
 
 // now this id

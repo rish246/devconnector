@@ -29,13 +29,11 @@ export const getPosts = () => async (dispatch) => {
 
 export const getPost = (postId) => async (dispatch) => {
 	// first we have to be validated in order to use this token
-	console.log(postId);
 	if (localStorage.token) {
 		setAuthToken(localStorage.token);
 	}
 	try {
 		const response = await server.get(`/posts/${postId}`);
-		console.log(response.data);
 
 		dispatch({
 			type: GET_POST,
@@ -57,8 +55,6 @@ export const createPost = (formValues) => async (dispatch) => {
 			setAuthToken(localStorage.token);
 		}
 		const response = await server.post('/posts', formValues, config);
-
-		console.log(response);
 
 		dispatch({
 			type: ADD_POST,
@@ -105,13 +101,12 @@ export const unlikePost = (postId) => async (dispatch) => {
 
 		const response = await server.put(`/posts/unlike/${postId}`);
 
-		console.log(response.data);
 		dispatch({
 			type: UPDATE_LIKES,
 			payload: response.data
-		});
+		}); 
 
-		dispatch(getPost(postId));
+		dispatch(getPosts());
 	} catch (error) {
 		console.log(error);
 	}

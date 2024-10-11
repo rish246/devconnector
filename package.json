@@ -24,6 +24,7 @@
 		"uuid": "^7.0.2"
 	},
 	"devDependencies": {
+		"@types/react-router-dom": "^5.3.3",
 		"concurrently": "^5.1.0",
 		"nodemon": "^2.0.2"
 	}

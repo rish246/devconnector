@@ -47,15 +47,14 @@ export const createProfile = (formValues, edit = false) => async (dispatch) => {
 		console.log('inside the try block');
 		const config = {
 			headers: {
-				'Content-type': 'application/json'
+				'Content-type': 'application/json',
 			}
 		};
 
-		// setAuthToken(localStorage.token);
-		axios.defaults.headers.common['x-auth-token'] = localStorage.token;
+		setAuthToken(localStorage.token)
+		const response = await server.post('/profiles', formValues, config);
+		console.log({ response });
 
-		const response = await axios.post('http://localhost:5000/api/profiles', formValues, config);
-		console.log(response.data);
 
 		dispatch({
 			type: GET_PROFILE,
@@ -214,6 +213,8 @@ export const getAllProfiles = () => async (dispatch) => {
 export const getProfileById = (profileId) => async (dispatch) => {
 	try {
 		const response = await server.get(`/profiles/user/${profileId}`);
+		console.log({ profileId, data: response.data })
+
 		dispatch({
 			type: GET_PROFILE,
 			payload: response.data

@@ -1,4 +1,3 @@
-//this is the last
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
@@ -9,8 +8,7 @@ import Spinner from '../layouts/Spinner';
 
 class PostDiscussion extends Component {
 	componentDidMount() {
-		console.log(this.props.match.params.postId);
-		this.props.getPosts();
+		this.props.getPost(this.props.match.params.postId);
 	}
 
 	renderTextArea = ({ input, name, cols, rows, placeholder }) => {
@@ -24,17 +22,14 @@ class PostDiscussion extends Component {
 
 	renderPost = () => {
 		const { post, handleSubmit } = this.props;
+		console.log({ post });
 
 		return (
 			<section className="container">
-				<Link to="/posts" className="btn">
-					Back To Posts
-				</Link>
 				<div className="post bg-white p-1 my-1">
 					<div>
 						<Link to="profile.html">
-							<img className="round-img" src={post.avatar} alt="" />
-							<h4>{post.user.name}</h4>
+							<h4>{post.name}</h4>
 						</Link>
 					</div>
 					<div>
@@ -47,7 +42,6 @@ class PostDiscussion extends Component {
 						<h3>Leave A Comment</h3>
 					</div>
 					<form className="form my-1" onSubmit={handleSubmit(this.onSubmit)}>
-						{/* <textarea name="text" cols="30" rows="5" placeholder="Comment on this post" required /> */}
 						<Field
 							name="text"
 							cols="30"
@@ -62,21 +56,19 @@ class PostDiscussion extends Component {
 		);
 	};
 
-	renderComments = () => {
-		const { comments } = this.props.post;
-
+	renderComments(comments) {
 		return comments.map((comment) => {
 			return (
-				<div className="post bg-white p-1 my-1">
+				<div className="post bg-white p-1 my-1" key={comment._id}>
 					<div>
 						<Link to="profile.html">
-							<img class="round-img" src={comment.avatar} alt="" />
+							<img className="round-img" src={comment.avatar} alt="" />
 							<h4>{comment.name}</h4>
 						</Link>
 					</div>
 					<div>
-						<p class="my-1">{comment.text}</p>
-						<p class="post-date">Posted on {comment.date}</p>
+						<p className="my-1">{comment.text}</p>
+						<p className="post-date">Posted on {comment.date}</p>
 					</div>
 				</div>
 			);
@@ -86,38 +78,32 @@ class PostDiscussion extends Component {
 	render() {
 		const { post } = this.props;
 		if (!post) {
-			return (
-				<Fragment>
-					<Spinner />
-				</Fragment>
-			);
+			return <Spinner />;
 		}
+
+		console.log({ post: JSON.stringify(post) });
 
 		return (
 			<div>
 				{this.renderPost()}
-				{this.renderComments()}
+				{/* Check if comments exist before rendering */}
+				{post.comments && post.comments.length > 0 ? (
+					this.renderComments(post.comments)
+				) : (
+					<p>No comments yet.</p>
+				)}
 			</div>
 		);
 	}
 }
-const mapStateToProps = (state, ownProps) => {
-	const { posts } = state.post;
-	const post = posts.find((post) => post._id.toString() === ownProps.match.params.postId);
-	console.log(post);
 
+const mapStateToProps = (state, ownProps) => {
+	const post = state.post.post // Adjust this based on how your state is structured
 	return { post };
 };
 
 const wrappedForm = reduxForm({
 	form: 'commentForm'
 })(PostDiscussion);
-export default connect(mapStateToProps, { getPosts, addComment, getPost })(wrappedForm);
 
-//this is the last page that i am going to make for this project
-// start learning node.js and mongoDB
-// start working on adding a property to add other users in this project
-
-// i have to fetch the post every time the component is getting rendered or refreshed
-// call in the second function
-// make the function work else this project will not work in any case
+export default connect(mapStateToProps, { addComment, getPost })(wrappedForm);
