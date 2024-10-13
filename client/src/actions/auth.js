@@ -47,9 +47,7 @@ export const signUpUser = ({ name, email, password }) => async (dispatch) => {
 	}
 };
 
-// i am not dispatching the data at all
 
-// we are sending a bad request
 export const signInUser = ({ email, password }) => async (dispatch) => {
 	const config = {
 		header: {

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import history from '../../history';
 import { signInUser } from '../../actions/auth';
-import renderAlert from '../../utils/renderAlert';
+import Alert from './Alert';
 
 class Login extends Component {
 	// in the begining -- we have not put anything in the credentials
@@ -56,7 +56,7 @@ class Login extends Component {
 				<p className="lead">
 					<i className="fas fa-user" /> Sign into Your Account
 				</p>
-				{renderAlert(this.props.alert)}
+				<Alert alert={this.props.alert} />
 				<form className="form" onSubmit={handleSubmit(this.onSubmit)}>
 					{/* <div className="form-group">
 						<input type="password" placeholder="Password" name="password" />
@@ -92,7 +92,7 @@ const validate = (values) => {
 
 const mapStateToProps = (state) => {
 	const { isAuthenticated, error } = state.auth;
-
+	console.log(state)
 	const alert = state.alert;
 	return { isAuthenticated, error, alert };
 };
@@ -103,9 +103,3 @@ const wrappedForm = reduxForm({
 })(Login);
 
 export default connect(mapStateToProps, { signInUser })(wrappedForm);
-
-//now use mapStateToProps => if isAuthenticated => false => show the errors
-
-// we are updating the props => history.push('/')
-
-// we are losing the is

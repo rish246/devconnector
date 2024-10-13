@@ -67,8 +67,9 @@ class AddEducation extends Component {
 						<div class="form-group">
 							<Field
 								type="text"
-								placeholder="Field Of Study"
+								placeholder="* Field Of Study"
 								name="fieldofstudy"
+								required
 								component={this.renderInput}
 							/>
 						</div>
@@ -139,10 +140,3 @@ const wrappedForm = reduxForm({
 	validate
 })(AddEducation);
 export default connect(null, { addEducation })(wrappedForm);
-// add exp component table
-// add edu
-// update profile => refactor
-
-// tomorrow start working on getting profiles => displaying profiles altogether
-
-// reduxForm
