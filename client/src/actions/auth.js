@@ -80,6 +80,22 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = null;
       state.token = undefined;
+    },
+    setActiveUser: (state, action) => {
+      // { ...state, user: action.payload, isAuthenticated: true, loading: false };
+      state.user = action.payload;
+      state.isAuthenticated = true;
+      state.loading = false;
+    },
+    authFailed: (state, action) => {
+      return {
+				...state,
+				user: null,
+				token: undefined,
+				loading: false,
+				isAuthenticated: false,
+				error: action.payload
+			};
     }
   },
   extraReducers: (builder) => {
@@ -115,7 +131,7 @@ const authSlice = createSlice({
 
 
 // export const { signInUse÷r } = authSlice.actions;
-export const { logout } = authSlice.actions;
+export const { logout, setActiveUser, authFailed } = authSlice.actions;
 export default authSlice.reducer;
 // // i have to store it in the local storage that's it
 
@@ -152,27 +168,27 @@ export const signUpUser = ({ name, email, password }) => async (dispatch) => {
 		});
 	}
 };
-// // now i have to make an action to load the user once every component loads up
-export const loadUser = () => async (dispatch) => {
-	// we are not sending the token
-	if (localStorage.token) {
-		server.defaults.headers.common['x-auth-token'] = localStorage.token;
-	}
 
-	try {
-		const response = await server.get('/auth');
 
-		// in response, i got the user creds => user the id to set the user
-		dispatch({
-			type: USER_LOADED,
-			payload: response.data
-		});
-	} catch (err) {
-		dispatch({
-			type: AUTH_ERROR
-		});
-	}
-};
+export const loadUser = createAsyncThunk(
+  'auth/loadUser',
+  async (_, { dispatch, rejectWithValue }) => {
+    if (localStorage.token) {
+      server.defaults.headers.common['x-auth-token'] = localStorage.token;
+    }
+  
+    try {
+      const response = await server.get('/auth');
+      dispatch(setActiveUser(response.data)); // No need to dispatch here
+      // TODO: Fix this and add these cases later
+      return response.data
+    } catch (err) {
+      dispatch(authFailed(err))
+      rejectWithValue(err)
+    }
+  }
+)
+
 
 // last job is to signOut user
 export const signOutUser = createAsyncThunk(
