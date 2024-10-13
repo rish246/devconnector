@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 
-import { loadUser, SignOutUser } from '../../actions/auth';
+import { loadUser, signOutUser } from '../../actions/auth';
 class Header extends Component {
 	componentDidMount() {
 		this.props.loadUser();
@@ -54,7 +54,7 @@ class Header extends Component {
 						</Link>
 					</li>
 					<li>
-						<button className="btn btn-light" onClick={() => this.props.SignOutUser()}>
+						<button className="btn btn-light" onClick={() => this.props.signOutUser()}>
 							<span class="hide-sm">Logout</span>
 						</button>
 						<Redirect to="/login" />
@@ -74,4 +74,4 @@ const mapStateToProps = (state) => {
 	return { isAuthenticated };
 };
 
-export default connect(mapStateToProps, { loadUser, SignOutUser })(Header);
+export default connect(mapStateToProps, { loadUser, signOutUser })(Header);

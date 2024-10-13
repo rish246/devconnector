@@ -92,7 +92,6 @@ const validate = (values) => {
 
 const mapStateToProps = (state) => {
 	const { isAuthenticated, error } = state.auth;
-	console.log(state)
 	const alert = state.alert;
 	return { isAuthenticated, error, alert };
 };
