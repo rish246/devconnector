@@ -59,15 +59,14 @@ router.post('/', [ requireName, requireEmail, requirePassword ], async (req, res
 				id: user.id
 			}
 		};
+
+		await user.save();
+
 		jwToken.sign(payload, config.get('jwSecret'), { expiresIn: 360000 }, (err, token) => {
 			if (err) throw err;
 
 			res.json({ token }); // sends a status of 200 and res.send the token in the database
 		});
-
-		await user.save();
-
-		res.send('user registered');
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send('Server error');
