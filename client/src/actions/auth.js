@@ -61,13 +61,11 @@ export const signUpUser = createAsyncThunk(
     try {
       const response = await server.post('/users', body, config);
       localStorage.setItem('token', response.data.token);
-
       return response.data;
     } catch (err) {
       const errors = err.response?.data?.errors || [{ msg: err.message }];
-
+      console.log({ errors })
       errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
-
       return rejectWithValue(errors);
     }
   }
@@ -125,7 +123,6 @@ const authSlice = createSlice({
       state.token = undefined;
     },
     loginSuccess: (state, action) => {
-      console.log({ token: action.payload })
       state.error = [];
       state.loading = false;
       state.isAuthenticated = true;

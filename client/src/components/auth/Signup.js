@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 // get the action creator
 import { signUpUser } from '../../actions/auth';
+import Alert from './Alert';
 class Signup extends Component {
 	//make a component to render the input
 
@@ -45,6 +46,7 @@ class Signup extends Component {
 					</p>
 
 					{/* {renderAlert(this.props.alert)} */}
+					<Alert alert={this.props.alert} />
 					<form className="form" onSubmit={handleSubmit(this.onSubmit)}>
 						<Field type="text" placeholder="Name" name="name" component={this.renderInput} />
 
