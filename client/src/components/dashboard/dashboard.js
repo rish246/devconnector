@@ -15,8 +15,6 @@ class Dashboard extends Component {
 		this.props.fetchMyProfile();
 	}
 
-	//Loading => spinner
-	// Profile Found => profile Info
 	renderComponent() {
 		if (this.props.loading) {
 			return (
@@ -55,6 +53,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, { loadUser, fetchMyProfile, deleteProfile })(Dashboard);
-
-// create Profile form => register these users
-// createProfile, updateProfile

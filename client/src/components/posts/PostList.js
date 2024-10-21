@@ -71,6 +71,7 @@ class PostList extends Component {
 
 const mapStateToProps = (state) => {
 	//get the posts from state
+	console.log({ state })
 	const { posts } = state.post;
 	const { user } = state.auth;
 	return { posts, user };

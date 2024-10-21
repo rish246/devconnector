@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-// fetchMyProfile()
-import { fetchMyProfile, deleteExperience } from '../../actions/profiles';
+import { deleteExperience } from '../../actions/profiles';
 
 class Experience extends Component {
-	componentDidMount() {
-		this.props.fetchMyProfile(); //after we deleted the push => it should automatically show on the
-	}
-
 	renderExperience() {
 		// render the elements of this.props.education => array
 		if (!this.props.experience) {
@@ -56,9 +51,7 @@ class Experience extends Component {
 
 const mapStateToProps = (state) => {
 	const { experience } = state.profile.profile;
-	// how to get ids from exp array
-
 	return { experience };
 };
-export default connect(mapStateToProps, { fetchMyProfile, deleteExperience })(Experience);
+export default connect(mapStateToProps, { deleteExperience })(Experience);
 // no id is being provided in this context

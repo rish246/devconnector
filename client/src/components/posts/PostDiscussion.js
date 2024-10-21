@@ -16,8 +16,7 @@ class PostDiscussion extends Component {
 	};
 
 	onSubmit = (formValues) => {
-		console.log(formValues);
-		this.props.addComment(this.props.match.params.postId, formValues);
+		this.props.addComment({ postId: this.props.match.params.postId, formValues });
 	};
 
 	renderPost = () => {

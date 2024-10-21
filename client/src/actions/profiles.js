@@ -1,245 +1,192 @@
-// this will include all the fetchRequests from profile
-import axios from 'axios';
-
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import server from '../apis/server';
-import { PROFILE_ERROR, GET_PROFILE, GET_PROFILES, GET_REPOS, CLEAR_PROFILE, ACCOUNT_DELETED } from './types';
 import setAuthToken from '../utils/setAuthToken';
 import history from '../history';
 
-// action creator to getAll profiles => to get the profile
-export const fetchMyProfile = () => async (dispatch) => {
-	// we are not sending the token
+// Async Thunks for profile actions
 
-	console.log(localStorage.token);
-	if (localStorage.token) {
-		server.defaults.headers.common['x-auth-token'] = localStorage.token;
-	}
+export const fetchMyProfile = createAsyncThunk('profile/fetchMyProfile', async (_, { rejectWithValue }) => {
+  try {
+    if (localStorage.token) {
+      server.defaults.headers.common['x-auth-token'] = localStorage.token;
+    }
+    const response = await server.get('/profiles/me');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue({ msg: err.message });
+  }
+});
 
-	try {
-		const response = await server.get('/profiles/me');
+export const createProfile = createAsyncThunk('profile/createProfile', async ({ formValues, edit = false }, { rejectWithValue }) => {
+  try {
+    const config = { headers: { 'Content-type': 'application/json' } };
+    setAuthToken(localStorage.token);
+    const response = await server.post('/profiles', formValues, config);
+    history.push('/dashboard');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err);
+  }
+});
 
-		//no profile
-		dispatch({
-			type: GET_PROFILE,
-			payload: response.data
-		});
-		// if profile found => profile data is sent in the state
-	} catch (err) {
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: { msg: err.message }
-		});
-	}
-};
+export const addExperience = createAsyncThunk('profile/addExperience', async (formValues, { rejectWithValue }) => {
+  try {
+    const config = { headers: { 'Content-type': 'application/json' } };
+    setAuthToken(localStorage.token);
+    const response = await server.put('/profiles/experience', formValues, config);
+    history.push('/dashboard');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue({ msg: err.message });
+  }
+});
 
-// even if i am sending the x-auth-token we are still getting unauthorized
+export const addEducation = createAsyncThunk('profile/addEducation', async (formValues, { rejectWithValue }) => {
+  try {
+    const config = { headers: { 'Content-type': 'application/json' } };
+    setAuthToken(localStorage.token);
+    const response = await server.put('/profiles/education', formValues, config);
+    history.push('/dashboard');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue({ msg: err.message });
+  }
+});
 
-// if (!response.)
+export const deleteExperience = createAsyncThunk('profile/deleteExperience', async (expId, { rejectWithValue }) => {
+  try {
+    setAuthToken(localStorage.token);
+    const response = await server.delete(`/profiles/experience/${expId}`);
+	console.log({ response, expId })
+    history.push('/dashboard');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue({ msg: err.message });
+  }
+});
 
-// profile => me => response.status => if response.status => 404 => createProfile => profileInfo
+export const deleteEducation = createAsyncThunk('profile/deleteEducation', async (eduId, { rejectWithValue }) => {
+  try {
+    setAuthToken(localStorage.token);
+    const response = await server.delete(`/profiles/education/${eduId}`);
+    history.push('/dashboard');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue({ msg: err.message });
+  }
+});
 
-export const createProfile = (formValues, edit = false) => async (dispatch) => {
-	console.log('creating a new profile');
-	// load user =>
+export const deleteProfile = createAsyncThunk('profile/deleteProfile', async (_, { rejectWithValue }) => {
+  try {
+    if (window.confirm('Are you sure? This can NOT be undone!')) {
+      await server.delete('/profiles');
+      return 'Profile Deleted';
+    }
+  } catch (err) {
+    return rejectWithValue({ msg: err.response?.statusText, status: err.response?.status });
+  }
+});
 
-	// basically i am not sending any data to th ea
-	try {
-		console.log('inside the try block');
-		const config = {
-			headers: {
-				'Content-type': 'application/json',
-			}
-		};
+export const getAllProfiles = createAsyncThunk('profile/getAllProfiles', async (_, { rejectWithValue }) => {
+  try {
+    const response = await server.get('/profiles/all');
+    history.push('/profiles');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue({ msg: err.message });
+  }
+});
 
-		setAuthToken(localStorage.token)
-		const response = await server.post('/profiles', formValues, config);
-		console.log({ response });
+export const getProfileById = createAsyncThunk('profile/getProfileById', async (profileId, { rejectWithValue }) => {
+  try {
+    const response = await server.get(`/profiles/user/${profileId}`);
+    return response.data;
+  } catch (err) {
+    return rejectWithValue({ msg: err.message });
+  }
+});
 
+export const getGitRepos = createAsyncThunk('profile/getGitRepos', async (username, { rejectWithValue }) => {
+  try {
+    const response = await server.get(`/profiles/github/${username}`);
+    return response.data;
+  } catch (err) {
+    return rejectWithValue({ msg: err.message });
+  }
+});
 
-		dispatch({
-			type: GET_PROFILE,
-			payload: response.data
-		});
+// The Slice
 
-		history.push('/dashboard');
-	} catch (err) {
-		console.log(err);
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: err
-		});
-	}
+const profileSlice = createSlice({
+  name: 'profile',
+  initialState: {
+    profile: null,
+    profiles: [],
+    repos: [],
+    loading: false,
+    error: null
+  },
+  reducers: {
+    clearProfile: (state) => {
+      state.profile = null;
+      state.repos = [];
+    },
+    accountDeleted: (state) => {
+      state.profile = null;
+      state.profiles = [];
+      state.repos = [];
+    }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchMyProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchMyProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.profile = action.payload;
+      })
+      .addCase(fetchMyProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(createProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createProfile.fulfilled, (state, action) => {
+        state.loading = false;
+		console.log({ action })
+        state.profile = action.payload;
+      })
+      .addCase(createProfile.rejected, (state, action) => {
+		console.log({ action })
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Repeat for other thunks...
+      .addCase(deleteProfile.fulfilled, (state) => {
+        state.profile = null;
+        state.profiles = [];
+        state.repos = [];
+      })
+      .addCase(getAllProfiles.fulfilled, (state, action) => {
+        state.profiles = action.payload;
+      })
+      .addCase(getProfileById.fulfilled, (state, action) => {
+        state.profile = action.payload;
+      })
+      .addCase(getGitRepos.fulfilled, (state, action) => {
+        state.repos = action.payload;
+      })
+	  .addCase(deleteExperience.fulfilled, (state, action) => {
+		state.profile = action.payload;
+	  })
+	  .addCase(deleteEducation.fulfilled, (state, action) => {
+		state.profile = action.payload;
+	  })
+  }
+});
 
-	console.log('dispatched to the reducer');
-};
+export const { clearProfile, accountDeleted } = profileSlice.actions;
 
-export const addExperience = (formValues) => async (dispatch) => {
-	const config = {
-		headers: {
-			'Content-type': 'application/json'
-		}
-	};
-
-	setAuthToken(localStorage.token);
-
-	try {
-		const response = await server.put('/profiles/experience', formValues, config);
-		dispatch({
-			type: GET_PROFILE,
-			payload: response.data
-		});
-
-		history.push('/dashboard');
-	} catch (err) {
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: { msg: err.message }
-		});
-	}
-};
-
-export const addEducation = (formValues) => async (dispatch) => {
-	const config = {
-		headers: {
-			'Content-type': 'application/json'
-		}
-	};
-
-	setAuthToken(localStorage.token);
-
-	try {
-		const response = await server.put('/profiles/education', formValues, config);
-		dispatch({
-			type: GET_PROFILE,
-			payload: response.data
-		});
-
-		history.push('/dashboard');
-	} catch (err) {
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: { msg: err.message }
-		});
-	}
-};
-
-// now its time to delete experience
-export const deleteExperience = (expId) => async (dispatch, getState) => {
-	//delete experience
-	setAuthToken(localStorage.token);
-	// lets say if i have multiple exp => how would i know the id of the exp
-
-	try {
-		//anyways i will copy paste my errors from the devconnector file
-		const response = await server.delete(`/profiles/experience/${expId}`);
-
-		dispatch({
-			type: GET_PROFILE,
-			payload: response.data
-		});
-
-		history.push('/dashboard');
-	} catch (err) {
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: { msg: err.message }
-		});
-	}
-};
-// delete education
-
-export const deleteEducation = (eduId) => async (dispatch) => {
-	setAuthToken(localStorage.token);
-
-	try {
-		//anyways i will copy paste my errors from the devconnector file
-		const response = await server.delete(`/profiles/education/${eduId}`);
-
-		dispatch({
-			type: GET_PROFILE,
-			payload: response.data
-		});
-
-		history.push('/dashboard');
-	} catch (err) {
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: { msg: err.message }
-		});
-	}
-};
-
-// delete profile
-
-export const deleteProfile = () => async (dispatch) => {
-	if (window.confirm('Are you sure? This can NOT be undone!')) {
-		try {
-			await axios.delete('/api/profiles');
-
-			dispatch({ type: CLEAR_PROFILE });
-			dispatch({ type: ACCOUNT_DELETED });
-		} catch (err) {
-			dispatch({
-				type: PROFILE_ERROR,
-				payload: { msg: err.response.statusText, status: err.response.status }
-			});
-		}
-	}
-};
-
-//get all profiles
-// public route
-export const getAllProfiles = () => async (dispatch) => {
-	try {
-		const response = await server.get('/profiles/all');
-		console.log(response.data);
-		dispatch({
-			type: GET_PROFILES,
-			payload: response.data
-		});
-
-		//redirect to /profiels
-		history.push('/profiles');
-	} catch (err) {
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: { msg: err.message }
-		});
-	}
-};
-
-//get profile by id
-
-export const getProfileById = (profileId) => async (dispatch) => {
-	try {
-		const response = await server.get(`/profiles/user/${profileId}`);
-		console.log({ profileId, data: response.data })
-
-		dispatch({
-			type: GET_PROFILE,
-			payload: response.data
-		});
-	} catch (err) {
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: { msg: err.message }
-		});
-	}
-};
-
-// get Profile => match.params.id
-
-export const getGitRepos = (username) => async (dispatch) => {
-	try {
-		const response = await server.get(`/profiles/github/${username}`);
-		dispatch({
-			type: GET_REPOS,
-			payload: response.data
-		});
-	} catch (err) {
-		dispatch({
-			type: PROFILE_ERROR,
-			payload: { msg: err.message }
-		});
-	}
-};
+export default profileSlice.reducer;

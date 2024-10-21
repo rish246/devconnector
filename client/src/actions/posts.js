@@ -1,158 +1,196 @@
-import { GET_POSTS, GET_POST, ADD_POST, UPDATE_LIKES, DELETE_POST, ADD_COMMENT } from './types';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import server from '../apis/server';
 import setAuthToken from '../utils/setAuthToken';
 import history from '../history';
 
-export const getPosts = () => async (dispatch) => {
-	// first we have to be validated in order to use this token
-	try {
-		if (localStorage.token) {
-			setAuthToken(localStorage.token);
-		}
+// Thunks for async actions
 
-		const response = await server.get('/posts');
+export const getPosts = createAsyncThunk('posts/getPosts', async (_, { rejectWithValue }) => {
+  try {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
 
-		console.log(response.data);
+    const response = await server.get('/posts');
+    history.push('/posts');
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
 
-		dispatch({
-			type: GET_POSTS,
-			payload: response.data
-		});
+export const getPost = createAsyncThunk('posts/getPost', async (postId, { rejectWithValue }) => {
+  try {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
 
-		//when this happens we redirect to posts
+    const response = await server.get(`/posts/${postId}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
 
-		history.push('/posts');
-	} catch (error) {
-		console.log(error);
-	}
-};
+export const createPost = createAsyncThunk('posts/createPost', async (formValues, { dispatch, rejectWithValue }) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
 
-export const getPost = (postId) => async (dispatch) => {
-	// first we have to be validated in order to use this token
-	if (localStorage.token) {
-		setAuthToken(localStorage.token);
-	}
-	try {
-		const response = await server.get(`/posts/${postId}`);
+  try {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
 
-		dispatch({
-			type: GET_POST,
-			payload: response.data
-		});
-	} catch (error) {
-		console.log(error);
-	}
-};
+    const response = await server.post('/posts', formValues, config);
+    dispatch(getPosts());
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
 
-export const createPost = (formValues) => async (dispatch) => {
-	const config = {
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	};
-	try {
-		if (localStorage.token) {
-			setAuthToken(localStorage.token);
-		}
-		const response = await server.post('/posts', formValues, config);
+export const likePost = createAsyncThunk('posts/likePost', async (postId, { dispatch, rejectWithValue }) => {
+  try {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
 
-		dispatch({
-			type: ADD_POST,
-			payload: response.data
-		});
+    const response = await server.put(`/posts/like/${postId}`);
+    dispatch(getPosts());
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
 
-		dispatch(getPosts());
+export const unlikePost = createAsyncThunk('posts/unlikePost', async (postId, { dispatch, rejectWithValue }) => {
+  try {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
 
-		//dispatch an event to clear the value of the text area after the post is made that post is completed
-	} catch (error) {
-		console.log(error);
-	}
-};
+    const response = await server.put(`/posts/unlike/${postId}`);
+    dispatch(getPosts());
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
 
-//we get the post]
-// by this we will add => post.unshift => action.payload =>
+export const deletePost = createAsyncThunk('posts/deletePost', async (postId, { dispatch, rejectWithValue }) => {
+  try {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
 
-export const likePost = (postId) => async (dispatch) => {
-	try {
-		if (localStorage.token) {
-			setAuthToken(localStorage.token);
-		}
+    await server.delete(`/posts/${postId}`);
+    dispatch(getPosts());
+    return postId;
+  } catch (error) {
+    console.error(error);
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
 
-		const response = await server.put(`/posts/like/${postId}`);
+export const addComment = createAsyncThunk('posts/addComment', async ({ postId, formValues }, { dispatch, rejectWithValue }) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
 
-		console.log(response.data);
-		dispatch({
-			type: UPDATE_LIKES,
-			payload: response.data
-		});
+  try {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
 
-		dispatch(getPosts());
-		//after liking the post it will also get the posts again and update the reducer
-	} catch (error) {
-		console.log(error);
-	}
-};
+	console.log({ postId })
+    const response = await server.put(`/posts/comment/${postId}`, formValues, config);
+    dispatch(getPosts());
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
 
-export const unlikePost = (postId) => async (dispatch) => {
-	try {
-		if (localStorage.token) {
-			setAuthToken(localStorage.token);
-		}
+// The slice
 
-		const response = await server.put(`/posts/unlike/${postId}`);
+const postsSlice = createSlice({
+  name: 'posts',
+  initialState: {
+    posts: [],
+    post: null,
+    loading: false,
+    error: null,
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      // getPosts
+      .addCase(getPosts.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getPosts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.posts = action.payload;
+      })
+      .addCase(getPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // getPost
+      .addCase(getPost.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getPost.fulfilled, (state, action) => {
+        state.loading = false;
+        state.post = action.payload;
+      })
+      .addCase(getPost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // createPost
+      .addCase(createPost.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createPost.fulfilled, (state, action) => {
+        state.loading = false;
+        state.posts.push(action.payload);
+      })
+      .addCase(createPost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // likePost / unlikePost / deletePost / addComment
+      .addCase(likePost.fulfilled, (state, action) => {
+        state.posts = state.posts.map((post) =>
+          post._id === action.payload._id ? action.payload : post
+        );
+      })
+      .addCase(unlikePost.fulfilled, (state, action) => {
+        state.posts = state.posts.map((post) =>
+          post._id === action.payload._id ? action.payload : post
+        );
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.posts = state.posts.filter((post) => post._id !== action.payload);
+      })
+      .addCase(addComment.fulfilled, (state, action) => {
+        state.posts = state.posts.map((post) =>
+          post._id === action.payload._id ? action.payload : post
+        );
+      });
+  },
+});
 
-		dispatch({
-			type: UPDATE_LIKES,
-			payload: response.data
-		}); 
-
-		dispatch(getPosts());
-	} catch (error) {
-		console.log(error);
-	}
-};
-
-//make a action creator to delete the post
-export const deletePost = (postId) => async (dispatch) => {
-	try {
-		if (localStorage.token) {
-			setAuthToken(localStorage.token);
-		}
-
-		const response = await server.delete(`/posts/${postId}`);
-		console.log(response.data);
-
-		dispatch({
-			type: DELETE_POST,
-			payload: postId
-		});
-
-		dispatch(getPosts());
-	} catch (error) {
-		console.log(error);
-	}
-};
-
-export const addComment = (postId, formValues) => async (dispatch) => {
-	//add a comment to a postId
-	const config = {
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	};
-	try {
-		setAuthToken(localStorage.token);
-
-		const response = await server.put(`/posts/comment/${postId}`, formValues, config);
-		console.log(response);
-
-		dispatch({
-			type: ADD_COMMENT,
-			response: response.data
-		});
-
-		dispatch(getPosts());
-	} catch (error) {
-		console.log(error);
-	}
-};
+export default postsSlice.reducer;

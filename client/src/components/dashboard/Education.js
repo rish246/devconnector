@@ -6,7 +6,7 @@ import { fetchMyProfile, deleteEducation } from '../../actions/profiles';
 
 class Education extends Component {
 	componentDidMount() {
-		this.props.fetchMyProfile();
+		// this.props.fetchMyProfile();
 	}
 
 	renderEducation = () => {
@@ -62,5 +62,5 @@ const mapStateToProps = (state) => {
 	console.log(education);
 	return { education };
 };
-export default connect(mapStateToProps, { fetchMyProfile, deleteEducation })(Education);
+export default connect(mapStateToProps, { deleteEducation })(Education);
 // no id is being provided in this context

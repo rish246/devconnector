@@ -5,10 +5,6 @@ import ProfileForm from './ProfileForm';
 import { fetchMyProfile } from '../../actions/profiles';
 import Spinner from '../layouts/Spinner';
 class EditProfile extends Component {
-	componentDidMount() {
-		//get the initial profile
-		this.props.fetchMyProfile();
-	}
 	render() {
 		if (!this.props.profile) {
 			return (
@@ -29,4 +25,4 @@ const mapStateToProps = (state) => {
 	return { profile };
 };
 
-export default connect(mapStateToProps, { fetchMyProfile })(EditProfile);
+export default connect(mapStateToProps)(EditProfile);
