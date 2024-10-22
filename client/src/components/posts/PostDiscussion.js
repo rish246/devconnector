@@ -1,108 +1,96 @@
-import React, { Component, Fragment } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
-import { getPosts, addComment, getPost } from '../../slices/posts';
+import { addComment, getPost } from '../../slices/posts';
 import Spinner from '../layouts/Spinner';
 
-class PostDiscussion extends Component {
-	componentDidMount() {
-		this.props.getPost(this.props.match.params.postId);
-	}
+const PostDiscussion = ({ handleSubmit }) => {
+  const { postId } = useParams();
+  const dispatch = useDispatch();
+  
+  const post = useSelector((state) => state.post.post);
 
-	renderTextArea = ({ input, name, cols, rows, placeholder }) => {
-		return <textarea name={name} cols={cols} rows={rows} placeholder={placeholder} {...input} />;
-	};
+  useEffect(() => {
+    dispatch(getPost(postId)); // Fetch the post when the component mounts
+  }, [dispatch, postId]);
 
-	onSubmit = (formValues) => {
-		this.props.addComment({ postId: this.props.match.params.postId, formValues });
-	};
+  const renderTextArea = ({ input, name, cols, rows, placeholder }) => (
+    <textarea name={name} cols={cols} rows={rows} placeholder={placeholder} {...input} />
+  );
 
-	renderPost = () => {
-		const { post, handleSubmit } = this.props;
-		console.log({ post });
+  const onSubmit = (formValues) => {
+    dispatch(addComment({ postId, formValues })); // Dispatch the addComment action
+  };
 
-		return (
-			<section className="container">
-				<div className="post bg-white p-1 my-1">
-					<div>
-						<Link to="profile.html">
-							<h4>{post.name}</h4>
-						</Link>
-					</div>
-					<div>
-						<p className="my-1">{post.text}</p>
-					</div>
-				</div>
+  const renderPost = () => (
+    <section className="container">
+      <div className="post bg-white p-1 my-1">
+        <div>
+          <Link to="profile.html">
+            <h4>{post.name}</h4>
+          </Link>
+        </div>
+        <div>
+          <p className="my-1">{post.text}</p>
+        </div>
+      </div>
 
-				<div className="post-form">
-					<div className="bg-primary p">
-						<h3>Leave A Comment</h3>
-					</div>
-					<form className="form my-1" onSubmit={handleSubmit(this.onSubmit)}>
-						<Field
-							name="text"
-							cols="30"
-							rows="5"
-							placeholder="Comment on this post"
-							component={this.renderTextArea}
-						/>
-						<input type="submit" className="btn btn-dark my-1" value="Submit" />
-					</form>
-				</div>
-			</section>
-		);
-	};
+      <div className="post-form">
+        <div className="bg-primary p">
+          <h3>Leave A Comment</h3>
+        </div>
+        <form className="form my-1" onSubmit={handleSubmit(onSubmit)}>
+          <Field
+            name="text"
+            cols="30"
+            rows="5"
+            placeholder="Comment on this post"
+            component={renderTextArea}
+          />
+          <input type="submit" className="btn btn-dark my-1" value="Submit" />
+        </form>
+      </div>
+    </section>
+  );
 
-	renderComments(comments) {
-		return comments.map((comment) => {
-			return (
-				<div className="post bg-white p-1 my-1" key={comment._id}>
-					<div>
-						<Link to="profile.html">
-							<img className="round-img" src={comment.avatar} alt="" />
-							<h4>{comment.name}</h4>
-						</Link>
-					</div>
-					<div>
-						<p className="my-1">{comment.text}</p>
-						<p className="post-date">Posted on {comment.date}</p>
-					</div>
-				</div>
-			);
-		});
-	};
+  const renderComments = (comments) => (
+    comments.map((comment) => (
+      <div className="post bg-white p-1 my-1" key={comment._id}>
+        <div>
+          <Link to="profile.html">
+            <img className="round-img" src={comment.avatar} alt="" />
+            <h4>{comment.name}</h4>
+          </Link>
+        </div>
+        <div>
+          <p className="my-1">{comment.text}</p>
+          <p className="post-date">Posted on {comment.date}</p>
+        </div>
+      </div>
+    ))
+  );
 
-	render() {
-		const { post } = this.props;
-		if (!post) {
-			return <Spinner />;
-		}
+  if (!post) {
+    return <Spinner />;
+  }
 
-		console.log({ post: JSON.stringify(post) });
-
-		return (
-			<div>
-				{this.renderPost()}
-				{/* Check if comments exist before rendering */}
-				{post.comments && post.comments.length > 0 ? (
-					this.renderComments(post.comments)
-				) : (
-					<p>No comments yet.</p>
-				)}
-			</div>
-		);
-	}
-}
-
-const mapStateToProps = (state, ownProps) => {
-	const post = state.post.post // Adjust this based on how your state is structured
-	return { post };
+  return (
+    <div>
+      {renderPost()}
+      {post.comments && post.comments.length > 0 ? (
+        renderComments(post.comments)
+      ) : (
+        <p>No comments yet.</p>
+      )}
+    </div>
+  );
 };
 
+// Wrap the component with redux-form
 const wrappedForm = reduxForm({
-	form: 'commentForm'
+  form: 'commentForm'
 })(PostDiscussion);
 
-export default connect(mapStateToProps, { addComment, getPost })(wrappedForm);
+export default wrappedForm;
