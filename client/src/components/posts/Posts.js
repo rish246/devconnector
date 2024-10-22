@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import PostCreate from './PostCreate';
 import PostList from './PostList';
-import { loadUser } from '../../actions/auth';
+import { loadUser } from '../../slices/auth';
 import Spinner from '../layouts/Spinner';
 
 class Posts extends Component {

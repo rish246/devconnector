@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Modal } from '../../components/layout/Modal';
-import { removeAlert } from '../../actions/alerts';
+import { removeAlert } from '../../slices/alerts';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Alert = ({ alert }) => {

@@ -6,7 +6,7 @@ import Landing from './layouts/Landing';
 import history from '../history';
 import Signup from './auth/Signup';
 import Login from './auth/Login';
-import Dashboard from './dashboard/dashboard';
+import Dashboard from './dashboard/Dashboard';
 import CreateProfile from './Profiles/CreateProfile';
 import EditProfile from './Profiles/EditProfile';
 import AddExperience from './Profiles/AddExperience'; // add exp form

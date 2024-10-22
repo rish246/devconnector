@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Field, reduxForm, Form } from 'redux-form';
 
-import { createPost } from '../../actions/posts';
+import { createPost } from '../../slices/posts';
 import { connect } from 'react-redux';
 
 class PostCreate extends Component {
@@ -15,8 +15,6 @@ class PostCreate extends Component {
 
 	onSubmit = (formValues) => {
 		this.props.createPost(formValues);
-
-		//clear the value of the textAreav
 	};
 	render() {
 		const { handleSubmit } = this.props;

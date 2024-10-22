@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 
-import { getProfileById, getGitRepos } from '../../actions/profiles';
+import { getProfileById, getGitRepos } from '../../slices/profiles';
 import Spinner from '../layouts/Spinner';
 import { Link } from 'react-router-dom';
 
@@ -213,6 +213,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, { getProfileById })(ShowProfile);
-// specific dev's profile
-
-// now this id

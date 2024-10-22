@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 
-import { loadUser, signOutUser } from '../../actions/auth';
+import { loadUser, signOutUser } from '../../slices/auth';
 class Header extends Component {
 	componentDidMount() {
 		this.props.loadUser();

@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { getAllProfiles } from '../../actions/profiles';
+import { getAllProfiles } from '../../slices/profiles';
 import Spinner from '../layouts/Spinner';
 class Profiles extends Component {
 	componentDidMount() {

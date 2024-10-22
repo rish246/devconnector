@@ -4,8 +4,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { getPosts, likePost, unlikePost, deletePost } from '../../actions/posts';
-import { loadUser } from '../../actions/auth';
+import { getPosts, likePost, unlikePost, deletePost } from '../../slices/posts';
+import { loadUser } from '../../slices/auth';
 
 class PostList extends Component {
 	componentDidMount() {

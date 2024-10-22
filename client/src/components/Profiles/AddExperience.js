@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { addExperience } from '../../actions/profiles';
+import { addExperience } from '../../slices/profiles';
 class AddExperience extends Component {
 	renderError = ({ touched, error }) => {
 		if (touched && error) {

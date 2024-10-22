@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 
 // fetchMyProfile()
-import { fetchMyProfile, deleteEducation } from '../../actions/profiles';
+import { fetchMyProfile, deleteEducation } from '../../slices/profiles';
 
 class Education extends Component {
 	componentDidMount() {

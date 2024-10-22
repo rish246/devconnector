@@ -81,7 +81,6 @@ export const loadUser = createAsyncThunk(
     try {
       const response = await server.get('/auth');
       dispatch(setActiveUser(response.data));
-      console.log('Loading user', response)
       return response.data;
     } catch (err) {
       dispatch(authFailed(err));

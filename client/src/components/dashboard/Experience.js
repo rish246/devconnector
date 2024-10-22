@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { deleteExperience } from '../../actions/profiles';
+import { deleteExperience } from '../../slices/profiles';
 
 class Experience extends Component {
 	renderExperience() {

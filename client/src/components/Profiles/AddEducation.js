@@ -3,7 +3,7 @@ import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { addEducation } from '../../actions/profiles';
+import { addEducation } from '../../slices/profiles';
 class AddEducation extends Component {
 	renderError = ({ touched, error }) => {
 		if (touched && error) {

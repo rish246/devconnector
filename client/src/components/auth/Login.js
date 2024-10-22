@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import history from '../../history';
-import { signInUser } from '../../actions/auth';
+import { signInUser } from '../../slices/auth';
 import Alert from './Alert';
 
 class Login extends Component {

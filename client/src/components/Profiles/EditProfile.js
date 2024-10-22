@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 
 import ProfileForm from './ProfileForm';
-import { fetchMyProfile } from '../../actions/profiles';
+import { fetchMyProfile } from '../../slices/profiles';
 import Spinner from '../layouts/Spinner';
 class EditProfile extends Component {
 	render() {

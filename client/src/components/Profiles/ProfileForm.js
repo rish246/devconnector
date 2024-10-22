@@ -3,7 +3,7 @@ import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { createProfile } from '../../actions/profiles';
+import { createProfile } from '../../slices/profiles';
 
 class ProfileForm extends Component {
 	renderError = ({ touched, error }) => {

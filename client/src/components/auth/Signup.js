@@ -5,7 +5,7 @@ import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
 
 // get the action creator
-import { signUpUser } from '../../actions/auth';
+import { signUpUser } from '../../slices/auth';
 import Alert from './Alert';
 class Signup extends Component {
 	//make a component to render the input
