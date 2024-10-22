@@ -1,6 +1,11 @@
 import React, { useEffect, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMyProfile, deleteProfile } from "../../slices/profiles";
+import {
+  fetchMyProfile,
+  deleteProfile,
+  deleteEducation,
+  deleteExperience,
+} from "../../slices/profiles";
 import { Link } from "react-router-dom";
 import Spinner from "../layouts/Spinner";
 import DashboardActions from "./DashboardActions";
@@ -33,8 +38,14 @@ const Dashboard = () => {
       return (
         <Fragment>
           <DashboardActions />
-          <Education />
-          <Experience />
+          <Education
+            education={profile.education}
+            onDelete={id => dispatch(deleteEducation(id))}
+          />
+          <Experience 
+		  	experience={profile.experience}
+			onDelete={id => dispatch(deleteExperience(id))}
+		  />
           <button
             className="btn btn-danger"
             onClick={() => dispatch(deleteProfile(profile._id))}
