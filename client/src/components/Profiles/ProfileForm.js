@@ -35,7 +35,7 @@ class ProfileForm extends Component {
 	onSubmit = (formValues) => {
 		console.log({ formValues });
 		// we have formValues ... now we can make an action creator to use the form values to make post req to the backend
-		this.props.createProfile({ formValues }, this.props.edit);
+		this.props.createProfile({ formValues, edit: this.props.edit });
 	};
 
 	render() {
