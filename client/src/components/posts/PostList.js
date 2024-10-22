@@ -5,15 +5,17 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { getPosts, likePost, unlikePost, deletePost } from '../../actions/posts';
-import { getProfileById } from '../../actions/profiles';
+import { loadUser } from '../../actions/auth';
 
 class PostList extends Component {
 	componentDidMount() {
 		//fetchTheVideos
+		this.props.loadUser();
 		this.props.getPosts();
 	}
 
 	renderDeleteButton = ({ _id, user }) => {
+		console.log({ props: this.props })
 		if (this.props.user._id.toString() === user) {
 			return (
 				<button type="button" className="btn btn-danger" onClick={() => this.props.deletePost(_id)}>
@@ -77,4 +79,4 @@ const mapStateToProps = (state) => {
 	return { posts, user };
 };
 
-export default connect(mapStateToProps, { getPosts, likePost, unlikePost, deletePost })(PostList);
+export default connect(mapStateToProps, { getPosts, likePost, unlikePost, deletePost, loadUser })(PostList);

@@ -149,6 +149,7 @@ const profileSlice = createSlice({
       .addCase(fetchMyProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+		state.profile = null;
       })
       .addCase(createProfile.pending, (state) => {
         state.loading = true;

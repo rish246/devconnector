@@ -81,6 +81,7 @@ export const loadUser = createAsyncThunk(
     try {
       const response = await server.get('/auth');
       dispatch(setActiveUser(response.data));
+      console.log('Loading user', response)
       return response.data;
     } catch (err) {
       dispatch(authFailed(err));
@@ -94,7 +95,6 @@ export const signOutUser = createAsyncThunk(
   async (_, { dispatch }) => {
     localStorage.removeItem('token');
     dispatch(logout());
-    dispatch({ type: CLEAR_PROFILE });
     history.push('/');
   }
 );
