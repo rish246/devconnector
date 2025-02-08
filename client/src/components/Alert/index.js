@@ -1,7 +1,7 @@
-import React from "react";
-import { Modal } from "../layout/Modal";
+import React, { useEffect } from "react";
 import { removeAlert } from "../../slices/alerts";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import Modal from "../Modal";
 
 const Alert = ({ alert }) => {
     const dispatch = useDispatch();

@@ -2,7 +2,8 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { signUpUser } from "../../slices/auth";
-import Alert from "./Alert";
+import Alert from "../../components/Alert";
+
 import FormGroup from "../../components/FormGroup";
 import FormField from "../../components/FormField";
 import { useForm } from "../../hooks/use-form";
