@@ -49,6 +49,26 @@ export class ValidateEmail {
     }
 }
 
+export class ValidateMatch {
+    constructor(fieldToMatch, errorText) {
+        this.fieldToMatch = fieldToMatch;
+        this.errorText = errorText || "Fields must match";
+    }
+
+    test(value, formData) {
+        if (value !== formData[this.fieldToMatch]) {
+            return {
+                type: ValidationResult.Failed,
+                error: this.errorText,
+            };
+        }
+
+        return {
+            type: ValidationResult.Success,
+        };
+    }
+}
+
 export const ValidationResult = {
     Success: 0,
     Failed: 1,

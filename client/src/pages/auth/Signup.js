@@ -6,7 +6,11 @@ import Alert from "./Alert";
 import FormGroup from "../../components/FormGroup";
 import FormField from "../../components/FormField";
 import { useForm } from "../../hooks/use-form";
-import { ValidateEmail, ValidateRequired } from "../../utils/validators";
+import {
+    ValidateEmail,
+    ValidateMatch,
+    ValidateRequired,
+} from "../../utils/validators";
 
 const Signup = () => {
     const dispatch = useDispatch();
@@ -19,7 +23,10 @@ const Signup = () => {
         name: [new ValidateRequired()],
         email: [new ValidateRequired(), new ValidateEmail()],
         password: [new ValidateRequired()],
-        password2: [new ValidateRequired()],
+        password2: [
+            new ValidateRequired(),
+            new ValidateMatch("password", "Password must match"),
+        ],
     };
 
     const { formData, errors, handleChange } = useForm(

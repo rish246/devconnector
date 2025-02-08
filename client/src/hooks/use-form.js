@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { evaluate } from "../utils/Evaluator";
+
 export const useForm = (initialState, validators) => {
     const initialErrors = getInitialErrors(initialState);
     const [formData, setFormData] = useState(initialState);
@@ -16,7 +17,8 @@ export const useForm = (initialState, validators) => {
             ...curErrors,
             [e.target.name]: evaluate(
                 e.target.value,
-                validators[e.target.name]
+                validators[e.target.name],
+                formData
             ),
         }));
     };
