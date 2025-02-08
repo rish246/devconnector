@@ -1,123 +1,97 @@
-// sign up form
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
+import { signUpUser } from "../../slices/auth";
+import Alert from "./Alert";
+import FormGroup from "../../components/FormGroup";
+import FormField from "../../components/FormField";
+import { useForm } from "../../hooks/use-form";
+import { ValidateEmail, ValidateRequired } from "../../utils/validators";
 
-// get the action creator
-import { signUpUser } from '../../slices/auth';
-import Alert from './Alert';
-class Signup extends Component {
-	//make a component to render the input
+const Signup = () => {
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const alert = useSelector((state) => state.alert);
+    const { isAuthenticated } = useSelector((state) => state.auth);
 
-	renderError = ({ error, touched }) => {
-		if (touched && error) {
-			return <div className="alert-danger ">{error}</div>;
-		}
+    const initialState = { name: "", email: "", password: "", password2: "" };
+    const validators = {
+        name: [new ValidateRequired()],
+        email: [new ValidateRequired(), new ValidateEmail()],
+        password: [new ValidateRequired()],
+        password2: [new ValidateRequired()],
+    };
 
-		return null;
-	};
+    const { formData, errors, handleChange } = useForm(
+        initialState,
+        validators
+    );
 
-	renderInput = ({ input, type, name, placeholder, minLength, meta }) => {
-		// it returns the input
-		return (
-			<div className="form-group">
-				<input type={type} placeholder={placeholder} name={name} minLength={minLength} {...input} />
-				{this.renderError(meta)}
-			</div>
-		);
-	};
-	// my onChange func is not working
-	// value is already getting set to null so when i am changing the value
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (Object.values(errors).some((err) => err.length > 0)) return;
+        dispatch(signUpUser(formData));
+    };
 
-	onSubmit = (formValues) => {
-		// i have the formValues now i can make the use of an action creator to register the user to our server
-		this.props.signUpUser(formValues);
-	};
+    if (isAuthenticated) {
+        history.push("/dashboard");
+    }
 
-	render() {
-		const { handleSubmit } = this.props;
-		return (
-			<div>
-				<section className="container">
-					<h1 className="large text-primary">Sign Up</h1>
-					<p className="lead">
-						<i className="fas fa-user" /> Create Your Account
-					</p>
-
-					{/* {renderAlert(this.props.alert)} */}
-					<Alert alert={this.props.alert} />
-					<form className="form" onSubmit={handleSubmit(this.onSubmit)}>
-						<Field type="text" placeholder="Name" name="name" component={this.renderInput} />
-
-						<Field type="email" placeholder="Email Address" name="email" component={this.renderInput} />
-
-						<Field
-							type="password"
-							placeholder="Password"
-							name="password"
-							minLength="6"
-							component={this.renderInput}
-						/>
-
-						<Field
-							type="password"
-							placeholder="Confirm Password"
-							name="password2"
-							minLength="6"
-							component={this.renderInput}
-						/>
-						<input type="submit" className="btn btn-primary" value="Register" />
-					</form>
-					<p className="my-1">
-						Already have an account? <Link to="/login">Log In</Link>
-					</p>
-				</section>
-			</div>
-		);
-	}
-}
-// i will use validation inside the redux form
-
-const validate = (values) => {
-	const errors = {};
-
-	const errorMessage = 'This field is required';
-	if (!values.name) {
-		errors.name = errorMessage;
-	}
-	if (!values.email) {
-		errors.email = errorMessage;
-	} else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-		errors.email = 'Invalid email address';
-	}
-	if (!values.password) {
-		errors.password = errorMessage;
-	}
-
-	if (!values.password2) {
-		errors.password2 = errorMessage;
-	}
-
-	if (values.password !== values.password2) {
-		errors.password2 = 'Passwords must match';
-	}
-
-	return errors;
+    return (
+        <section className="container">
+            <h1 className="large text-primary">Sign Up</h1>
+            <p className="lead">
+                <i className="fas fa-user" /> Create Your Account
+            </p>
+            <Alert alert={alert} />
+            <form className="form" onSubmit={handleSubmit}>
+                <FormGroup title="Name">
+                    <FormField
+                        type="text"
+                        placeholder="Name"
+                        name="name"
+                        errors={errors.name}
+                        onChange={handleChange}
+                    />
+                </FormGroup>
+                <FormGroup title="Email">
+                    <FormField
+                        type="email"
+                        placeholder="Email"
+                        name="email"
+                        errors={errors.email}
+                        onChange={handleChange}
+                    />
+                </FormGroup>
+                <FormGroup title="Password">
+                    <FormField
+                        type="password"
+                        placeholder="Password"
+                        name="password"
+                        errors={errors.password}
+                        onChange={handleChange}
+                    />
+                </FormGroup>
+                <FormGroup title="Confirm Password">
+                    <FormField
+                        type="password"
+                        placeholder="Confirm Password"
+                        name="password2"
+                        errors={errors.password2}
+                        onChange={handleChange}
+                    />
+                </FormGroup>
+                <input
+                    type="submit"
+                    className="btn btn-primary"
+                    value="Register"
+                />
+            </form>
+            <p className="my-1">
+                Already have an account? <Link to="/login">Log In</Link>
+            </p>
+        </section>
+    );
 };
 
-const mapStateToProps = (state) => {
-	const { alert } = state;
-	return { alert };
-};
-
-const wrappedForm = reduxForm({
-	form: 'signUpForm',
-	validate
-})(Signup);
-
-export default connect(mapStateToProps, { signUpUser })(wrappedForm);
-
-// this was a nice strat to store the alerts in the reducer and to fetch them afterwards
-
-// tomorrow => we will start working on the posts action creator, reducer and posts components
+export default Signup;
