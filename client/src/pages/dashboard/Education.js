@@ -51,12 +51,12 @@ export function Education({ education, onDelete }) {
         {
             name: "School",
             render: (school) => <td>{school}</td>,
-            heading: () => <th class="hide-sm">School</th>,
+            heading: () => <th className="hide-sm">School</th>,
         },
         {
             name: "Degree",
             render: (degree) => <td className="hide-sm">{degree}</td>,
-            heading: () => <th class="hide-sm">Degree</th>,
+            heading: () => <th className="hide-sm">Degree</th>,
         },
         {
             name: "Years",
@@ -65,10 +65,14 @@ export function Education({ education, onDelete }) {
                     {from} - {to ? to : "current"}
                 </td>
             ),
-            heading: () => <th class="hide-sm">Years</th>,
+            heading: () => <th className="hide-sm">Years</th>,
         },
     ];
 
-    return <Table config={config} data={education} />;
+    const data = education.map(({ school, degree, from }) => {
+        const years = 3; // todo: fix this
+        return [school, degree, years];
+    });
+    return <Table className="table" config={config} data={data} />;
 }
 export default Education;
