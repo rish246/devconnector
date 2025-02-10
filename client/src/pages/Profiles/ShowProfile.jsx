@@ -1,243 +1,180 @@
-import React, { Component, Fragment } from "react";
-import { connect } from "react-redux";
-
-import { getProfileById, getGitRepos } from "../../slices/profiles";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { getProfileById } from "../../slices/profiles";
 import Spinner from "../../components/Spinner";
 
-//when this component renders => we want to get the profile
-class ShowProfile extends Component {
-    componentDidMount() {
-        // get profile by id
-        // console.log(this.props)
-        console.log("Mounted Component");
-        this.props.getProfileById(this.props.match.params.id);
-        // make another action creator to get the github profiles of the user
-    }
+const ShowProfile = () => {
+    const dispatch = useDispatch();
+    const { id } = useParams();
+    const { profile } = useSelector((state) => state.profile);
 
-    renderSkills(skills) {
-        return skills.map((skill) => {
-            return (
-                <div class="p-1">
-                    <i class="fa fa-check" /> {skill}
-                </div>
-            );
-        });
-    }
+    useEffect(() => {
+        dispatch(getProfileById(id));
+    }, [dispatch, id]);
 
-    renderExperience(experience) {
-        return experience.map(
-            ({ company, from, to, description, position }) => {
-                return (
-                    <div>
-                        <h3 class="text-dark">{company}</h3>
-                        <p>
-                            {from} - {to || "Current"}
-                        </p>
-                        <p>
-                            <strong>Position: </strong>
-                            {position}
-                        </p>
-                        <p>
-                            <strong>Description: </strong>
-                            {description}
-                        </p>
-                    </div>
-                );
-            }
-        );
-    }
+    const renderSkills = (skills) => {
+        return skills.map((skill, index) => (
+            <div key={index} className="p-1">
+                <i className="fa fa-check" /> {skill}
+            </div>
+        ));
+    };
 
-    renderEducation(education) {
-        return education.map(
-            ({ school, from, to, degree, fieldOfStudy, description }) => {
-                return (
-                    <div>
-                        <h3>{school}</h3>
-                        <p>
-                            {from} - {to || "current"}
-                        </p>
-                        <p>
-                            <strong>Degree: </strong>
-                            {degree}
-                        </p>
-                        <p>
-                            <strong>Field Of Study: </strong>
-                            {fieldOfStudy}
-                        </p>
-                        <p>
-                            <strong>Description: </strong>
-                            {description}
-                        </p>
-                    </div>
-                );
-            }
-        );
-    }
+    const renderExperience = (experience) => {
+        return experience.map((exp, index) => (
+            <div key={index}>
+                <h3 className="text-dark">{exp.company}</h3>
+                <p>
+                    {exp.from} - {exp.to || "Current"}
+                </p>
+                <p>
+                    <strong>Position: </strong>
+                    {exp.position}
+                </p>
+                <p>
+                    <strong>Description: </strong>
+                    {exp.description}
+                </p>
+            </div>
+        ));
+    };
 
-    // getGitRepos(username) {
-    // 	this.props.getGitRepos(username);
-    // }
+    const renderEducation = (education) => {
+        return education.map((edu, index) => (
+            <div key={index}>
+                <h3>{edu.school}</h3>
+                <p>
+                    {edu.from} - {edu.to || "current"}
+                </p>
+                <p>
+                    <strong>Degree: </strong>
+                    {edu.degree}
+                </p>
+                <p>
+                    <strong>Field Of Study: </strong>
+                    {edu.fieldOfStudy}
+                </p>
+                <p>
+                    <strong>Description: </strong>
+                    {edu.description}
+                </p>
+            </div>
+        ));
+    };
 
-    // renderGitRepos(username) {
-    // 	this.getGitRepos(username); // make changes to redux store and now we will have
+    if (!profile) return <Spinner />;
 
-    // 	if (!this.props.repos.length) return null;
+    const {
+        skills,
+        _id,
+        user,
+        status,
+        experience,
+        education,
+        bio,
+        company,
+        location,
+        website,
+        social,
+    } = profile;
 
-    // 	return this.props.repos.map(({ name, stargazers_count, watchers_count, forks_count }, idx) => {
-    // 		return (
-    // 			<div class="repo bg-white p-1 my-1">
-    // 				<div>
-    // 					<h4>
-    // 						<a href="#" target="_blank" rel="noopener noreferrer">
-    // 							Repo {idx + 1}
-    // 						</a>
-    // 					</h4>
-    // 					<p>{name}</p>
-    // 				</div>
-    // 				<div>
-    // 					<ul>
-    // 						<li class="badge badge-primary">Stars: {stargazers_count}</li>
-    // 						<li class="badge badge-dark">Watchers: {watchers_count}</li>
-    // 						<li class="badge badge-light">Forks: {forks_count}</li>
-    // 					</ul>
-    // 				</div>
-    // 			</div>
-    // 		);
-    // 	});
-    // }
+    return (
+        <section className="container">
+            <Link to="/profiles" className="btn btn-light">
+                Back To Profiles
+            </Link>
 
-    renderSocials(socials) {}
-    renderProfile() {
-        console.log(this.profile);
-        if (!Object.keys(this.props.profile).length) {
-            return (
-                <Fragment>
-                    <Spinner />
-                </Fragment>
-            );
-        }
-
-        const {
-            skills,
-            _id,
-            user,
-            status,
-            experience,
-            education,
-            date,
-            bio,
-            company,
-            githubusername,
-            location,
-            website,
-        } = this.props.profile;
-
-        console.log(user);
-        if (!user) return null;
-
-        return (
-            <section class="container" key={_id}>
-                <Link to="/profiles" class="btn btn-light">
-                    Back To Profiles
-                </Link>
-
-                <div class="profile-grid my-1">
-                    <div class="profile-top bg-primary p-2">
-                        <img class="round-img my-1" src={user.avatar} alt="" />
-                        <h1 class="large">{user.name}</h1>
-                        <p class="lead">
-                            {status} at {company}
-                        </p>
-                        <p>{location}</p>
-                        <div class="icons my-1">
+            <div className="profile-grid my-1">
+                <div className="profile-top bg-primary p-2">
+                    <img className="round-img my-1" src={user.avatar} alt="" />
+                    <h1 className="large">{user.name}</h1>
+                    <p className="lead">
+                        {status} {company && `at ${company}`}
+                    </p>
+                    {location && <p>{location}</p>}
+                    <div className="icons my-1">
+                        {website && (
                             <a
-                                href="#"
+                                href={website}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                <i class="fas fa-globe fa-2x" />
+                                <i className="fas fa-globe fa-2x" />
                             </a>
+                        )}
+                        {social?.twitter && (
                             <a
-                                href="#"
+                                href={social.twitter}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                <i class="fab fa-twitter fa-2x" />
+                                <i className="fab fa-twitter fa-2x" />
                             </a>
+                        )}
+                        {social?.facebook && (
                             <a
-                                href="#"
+                                href={social.facebook}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                <i class="fab fa-facebook fa-2x" />
+                                <i className="fab fa-facebook fa-2x" />
                             </a>
+                        )}
+                        {social?.linkedin && (
                             <a
-                                href="#"
+                                href={social.linkedin}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                <i class="fab fa-linkedin fa-2x" />
+                                <i className="fab fa-linkedin fa-2x" />
                             </a>
+                        )}
+                        {social?.youtube && (
                             <a
-                                href="#"
+                                href={social.youtube}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                <i class="fab fa-youtube fa-2x" />
+                                <i className="fab fa-youtube fa-2x" />
                             </a>
+                        )}
+                        {social?.instagram && (
                             <a
-                                href="#"
+                                href={social.instagram}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                <i class="fab fa-instagram fa-2x" />
+                                <i className="fab fa-instagram fa-2x" />
                             </a>
-                        </div>
-                    </div>
-
-                    <div class="profile-about bg-light p-2">
-                        <h2 class="text-primary">{user.name}'s bio</h2>
-                        <p>{bio}</p>
-                        <div class="line" />
-                        <h2 class="text-primary">Skill Set</h2>
-                        <div class="skills">{this.renderSkills(skills)}</div>
-                    </div>
-
-                    <div class="profile-exp bg-white p-2">
-                        <h2 class="text-primary">Experience</h2>
-                        {this.renderExperience(experience)}
-                    </div>
-
-                    <div class="profile-edu bg-white p-2">
-                        <h2 class="text-primary">Education</h2>
-                        {this.renderEducation(education)}
-                    </div>
-
-                    <div class="profile-github">
-                        <h2 class="text-primary my-1">
-                            <i class="fab fa-github" /> Github Repos
-                        </h2>
-
-                        {/* {this.renderGitRepos(githubusername)} */}
+                        )}
                     </div>
                 </div>
-            </section>
-        );
-    } //use this.props.profile
 
-    render() {
-        if (!this.props.profile) {
-            return <Spinner />;
-        }
-        return <div>{this.renderProfile()}</div>;
-    }
-}
+                <div className="profile-about bg-light p-2">
+                    <h2 className="text-primary">{user.name}'s bio</h2>
+                    <p>{bio || "No bio provided"}</p>
+                    <div className="line" />
+                    <h2 className="text-primary">Skill Set</h2>
+                    <div className="skills">{renderSkills(skills)}</div>
+                </div>
 
-const mapStateToProps = (state) => {
-    const { profile, repos } = state.profile;
-    console.log({ profile });
-    return { profile, repos };
+                {experience?.length > 0 && (
+                    <div className="profile-exp bg-white p-2">
+                        <h2 className="text-primary">Experience</h2>
+                        {renderExperience(experience)}
+                    </div>
+                )}
+
+                {education?.length > 0 && (
+                    <div className="profile-edu bg-white p-2">
+                        <h2 className="text-primary">Education</h2>
+                        {renderEducation(education)}
+                    </div>
+                )}
+            </div>
+        </section>
+    );
 };
 
-export default connect(mapStateToProps, { getProfileById })(ShowProfile);
+export default ShowProfile;
