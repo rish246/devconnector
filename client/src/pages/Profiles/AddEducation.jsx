@@ -1,142 +1,154 @@
-import React, { Component, Fragment } from 'react';
-import { Field, reduxForm } from 'redux-form';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { addEducation } from "../../slices/profiles";
+import Alert from "../../components/Alert";
+import FormGroup from "../../components/FormGroup";
+import FormField from "../../components/FormField";
+import { useForm } from "../../hooks/use-form";
+import { ValidateRequired } from "../../utils/validators";
 
-import { addEducation } from '../../slices/profiles';
-class AddEducation extends Component {
-	renderError = ({ touched, error }) => {
-		if (touched && error) {
-			return <div className="alert-danger ">{error}</div>;
-		}
+const AddEducation = () => {
+    const dispatch = useDispatch();
+    const alert = useSelector((state) => state.alert);
+    const [currentEducation, setCurrentEducation] = useState(false);
 
-		return null;
-	};
-	renderInput = ({ input, type, placeholder, name, meta }) => {
-		return (
-			<Fragment>
-				<input {...input} type={type} placeholder={placeholder} name={name} />
-				{this.renderError(meta)}
-			</Fragment>
-		);
-	};
+    const validators = {
+        school: [new ValidateRequired()],
+        degree: [new ValidateRequired()],
+        fieldofstudy: [new ValidateRequired()],
+        from: [new ValidateRequired()],
+    };
 
-	renderTextArea({ name, rows, cols, placeholder, input }) {
-		return (
-			<Fragment>
-				<textarea {...input} name={name} cols={cols} rows={rows} placeholder={placeholder} />
-			</Fragment>
-		);
-	}
+    const { formData, errors, handleChange } = useForm(
+        {
+            school: "",
+            degree: "",
+            fieldofstudy: "",
+            from: "",
+            to: "",
+            current: false,
+            description: "",
+        },
+        validators
+    );
 
-	onSubmit = (formValues) => {
-		// we can use these values to make a put req to /api/profiles/expreience =>
-		console.log(formValues);
-		this.props.addEducation(formValues);
-	};
-	render() {
-		const { handleSubmit } = this.props;
-		return (
-			<div>
-				{' '}
-				<section class="container">
-					<h1 class="large text-primary">Add An Education</h1>
-					<p class="lead">
-						<i class="fas fa-code-branch" /> Add any educational experience
-					</p>
-					<small>* = required field</small>
-					<form class="form" onSubmit={handleSubmit(this.onSubmit)}>
-						<div class="form-group">
-							<Field
-								type="text"
-								placeholder="* School or Bootcamp"
-								name="school"
-								required
-								component={this.renderInput}
-							/>
-						</div>
-						<div class="form-group">
-							<Field
-								type="text"
-								placeholder="* Degree or Certificate"
-								name="degree"
-								required
-								component={this.renderInput}
-							/>
-						</div>
-						<div class="form-group">
-							<Field
-								type="text"
-								placeholder="* Field Of Study"
-								name="fieldofstudy"
-								required
-								component={this.renderInput}
-							/>
-						</div>
-						<div class="form-group">
-							<h4>From Date</h4>
-							<Field type="date" name="from" component={this.renderInput} />
-						</div>
-						<div class="form-group">
-							<p>
-								<Field type="checkbox" name="current" value="" component={this.renderInput} /> Current
-								School/bootcamp
-							</p>
-						</div>
-						<div class="form-group">
-							<h4>To Date</h4>
-							<Field type="date" name="to" component={this.renderInput} />
-						</div>
-						<div class="form-group">
-							<Field
-								name="description"
-								cols="30"
-								rows="5"
-								placeholder="Job Description"
-								component={this.renderTextArea}
-							/>
-						</div>
-						<input type="submit" class="btn btn-primary my-1" />
-						<Link class="btn btn-light my-1" to="/dashboard">
-							Go Back
-						</Link>
-					</form>
-				</section>
-			</div>
-		);
-	}
-}
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const hasErrors = Object.values(errors).some((err) => err.length > 0);
+        if (hasErrors) return;
 
-const validate = (values) => {
-	const errors = {};
+        const educationData = {
+            ...formData,
+            current: currentEducation,
+            to: currentEducation ? "" : formData.to,
+        };
 
-	const errorMessage = 'This field is required';
+        dispatch(addEducation(educationData));
+    };
 
-	//school degree fieldOfStudy from
-	if (!values.school) {
-		errors.school = errorMessage;
-	}
+    return (
+        <section className="container">
+            <h1 className="large text-primary">Add Education</h1>
+            <p className="lead">
+                <i className="fas fa-code-branch" /> Add any educational
+                experience
+            </p>
+            <small>* = required field</small>
+            <Alert alert={alert} />
 
-	if (!values.degree) {
-		errors.degree = errorMessage;
-	}
+            <form className="form" onSubmit={handleSubmit}>
+                <FormGroup title="* School/Bootcamp">
+                    <FormField
+                        type="text"
+                        placeholder="* School or Bootcamp"
+                        name="school"
+                        value={formData.school}
+                        errors={errors.school}
+                        onChange={handleChange}
+                        required
+                    />
+                </FormGroup>
 
-	if (!values.fieldOfStudy) {
-		errors.fieldOfStudy = errorMessage;
-	}
+                <FormGroup title="* Degree/Certificate">
+                    <FormField
+                        type="text"
+                        placeholder="* Degree or Certificate"
+                        name="degree"
+                        value={formData.degree}
+                        errors={errors.degree}
+                        onChange={handleChange}
+                        required
+                    />
+                </FormGroup>
 
-	if (!values.from) {
-		errors.from = errorMessage;
-	}
+                <FormGroup title="* Field of Study">
+                    <FormField
+                        type="text"
+                        placeholder="* Field Of Study"
+                        name="fieldofstudy"
+                        value={formData.fieldofstudy}
+                        errors={errors.fieldofstudy}
+                        onChange={handleChange}
+                        required
+                    />
+                </FormGroup>
 
-	console.log(errors);
-	return errors;
+                <FormGroup title="* From Date">
+                    <FormField
+                        type="date"
+                        name="from"
+                        value={formData.from}
+                        errors={errors.from}
+                        onChange={handleChange}
+                        required
+                    />
+                </FormGroup>
+
+                <FormGroup>
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="current"
+                            checked={currentEducation}
+                            onChange={(e) =>
+                                setCurrentEducation(e.target.checked)
+                            }
+                        />{" "}
+                        Current School/Bootcamp
+                    </label>
+                </FormGroup>
+
+                {!currentEducation && (
+                    <FormGroup title="To Date">
+                        <FormField
+                            type="date"
+                            name="to"
+                            value={formData.to}
+                            onChange={handleChange}
+                            disabled={currentEducation}
+                        />
+                    </FormGroup>
+                )}
+
+                <FormGroup title="Description">
+                    <FormField
+                        type="textarea"
+                        name="description"
+                        placeholder="Program Description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        rows="5"
+                    />
+                </FormGroup>
+
+                <input type="submit" className="btn btn-primary my-1" />
+                <Link className="btn btn-light my-1" to="/dashboard">
+                    Go Back
+                </Link>
+            </form>
+        </section>
+    );
 };
 
-//sunday => add validation to all the forms => handle all the edge cases
-
-const wrappedForm = reduxForm({
-	form: 'addEducationForm',
-	validate
-})(AddEducation);
-export default connect(null, { addEducation })(wrappedForm);
+export default AddEducation;
