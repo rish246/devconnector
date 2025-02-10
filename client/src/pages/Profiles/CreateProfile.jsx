@@ -6,11 +6,3 @@ function CreateProfile() {
 }
 
 export default CreateProfile;
-
-// user set kar dega
-
-// refactor => profileForm => if(edit) => profileForm => values => else simple profile Form
-
-// get the profile and give the profile =>
-
-// createProfile was working before now it is not working whyy....
