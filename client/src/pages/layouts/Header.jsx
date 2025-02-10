@@ -1,10 +1,12 @@
 import React, { useEffect, Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useHistory } from 'react-router-dom'
 import { Link, Redirect } from 'react-router-dom';
 import { loadUser, signOutUser } from '../../slices/auth';
 
 const Header = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
@@ -61,11 +63,11 @@ const Header = () => {
               className="btn btn-light"
               onClick={() => {
                 dispatch(signOutUser());
+                history.push('/login');
               }}
             >
               <span className="hide-sm">Logout</span>
             </button>
-            <Redirect to="/login" />
           </li>
         </ul>
       </nav>

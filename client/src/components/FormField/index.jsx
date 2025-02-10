@@ -13,7 +13,7 @@ function FormField({ type, placeholder, name, className, errors, ...rest }) {
                 {...rest}
             />
 
-            {errors.map((error) => (
+            {errors?.map((error) => (
                 <p key={uuid()} className="form-error">
                     {error}
                 </p>
