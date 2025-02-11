@@ -14,6 +14,9 @@ const { requireEmail, requireName, requirePassword } = require('../helpers/valid
 // @access   Public
 router.post('/', [ requireName, requireEmail, requirePassword ], async (req, res) => {
 	const errors = validationResult(req);
+	console.log({
+		errors
+	})
 	if (!errors.isEmpty()) {
 		return res.status(400).json({ errors: errors.array() });
 	}
@@ -43,9 +46,10 @@ router.post('/', [ requireName, requireEmail, requirePassword ], async (req, res
 			password
 		});
 
-		const salt = await bcrypt.genSalt(10);
+		// const salt = await bcrypt.genSalt(10);
 
-		user.password = await bcrypt.hash(password, salt);
+		// user.password = await bcrypt.hash(password, salt);
+		user.password = password;
 
 		// time to implement the jason web token in the next video
 
@@ -55,15 +59,14 @@ router.post('/', [ requireName, requireEmail, requirePassword ], async (req, res
 				id: user.id
 			}
 		};
+
+		await user.save();
+
 		jwToken.sign(payload, config.get('jwSecret'), { expiresIn: 360000 }, (err, token) => {
 			if (err) throw err;
 
 			res.json({ token }); // sends a status of 200 and res.send the token in the database
 		});
-
-		await user.save();
-
-		res.send('user registered');
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send('Server error');

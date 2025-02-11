@@ -22,7 +22,9 @@ app.get('/', (req, res) => {
 //use all the routers
 
 //Use the bodyParser => express.json({ extended: true })
-app.use(cors());
+app.use(cors({
+	'Access-Control-Allow-Origin': '*'
+}));
 app.use(express.json({ extended: true }));
 
 app.use('/api/users', usersRouter);
@@ -31,5 +33,5 @@ app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
 
 // using all the routers
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Listening at PORT: ${5000}`));
+const PORT = process.env.PORT || 5553;
+app.listen(PORT, () => console.log(`Listening at PORT: ${PORT}`));

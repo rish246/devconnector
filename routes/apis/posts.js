@@ -31,6 +31,7 @@ router.post('/', [ auth, [ requireText ] ], async (req, res) => {
 		return res.status(400).json({ errors: errors.array() });
 	}
 	try {
+		console.log({ id: req.user.id })
 		//find the user who posted the comment
 		const user = await User.findById(req.user.id).select('-password');
 
@@ -59,7 +60,7 @@ router.get('/:postId', auth, async (req, res) => {
 		const post = await Post.findById(req.params.postId);
 
 		// Check for ObjectId format and post
-		if (!req.params.id.match(/^[0-9a-fA-F]{24}$/) || !post) {
+		if (!req.params.postId.match(/^[0-9a-fA-F]{24}$/) || !post) {
 			return res.status(404).json({ msg: 'Post not found' });
 		}
 
@@ -97,7 +98,6 @@ router.delete('/:id', auth, async (req, res) => {
 		res.status(500).send('Server Error');
 	}
 });
-
 // when we like a post, we make a req to update the likes of the post... in postId...
 // req.user.id => user liking the post
 // in likes arr => store user with id req.user.id inside the array
@@ -142,12 +142,14 @@ router.put('/like/:postId', auth, async (req, res) => {
 // @access      PRIVATE
 router.put('/unlike/:postId', auth, async (req, res) => {
 	try {
+		console.log('REQUEST REACHED HERE')
 		// get the post with the id
 		const post = await Post.findById(req.params.postId);
-
 		// find if the post has been liked already
+		console.log({ likes: post.likes })
 		const found = post.likes.find((like) => like.user.toString() === req.user.id);
 
+		console.log({ found })
 		// if no ... it can't be disliked
 		if (!found) {
 			// cannot like the post

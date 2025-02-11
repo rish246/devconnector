@@ -2,6 +2,7 @@ const express = require('express');
 const config = require('config');
 const request = require('request');
 const { validationResult } = require('express-validator');
+const mongoose = require('mongoose')
 
 const auth = require('../helpers/middlewares/auth');
 const Profile = require('../../models/Profile');
@@ -19,27 +20,28 @@ const {
 
 const router = express.Router();
 
-// @router      GET apis/profiles/me
-// @desc        get users profile
-// @access      AUTHORISED
 router.get('/me', auth, async (req, res) => {
-	// auth is added since the route is protected so we have to check the route
-	try {
-		// profile model = { user: userId}
-		const profile = await Profile.findOne({ user: req.user.id }); // we fixed the bug but now it saying what since we dont have a profile that means we cannot find p
+    try {
+        // Check if req.user.id is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+            return res.status(400).json({ msg: 'Invalid user ID' });
+        }
 
-		if (!profile) {
-			//send a status of unauthorised access
-			return res.status(404).json({ msg: 'No profile, unauthorized access' });
-		}
-		// if profile exists then only populate the profile and not without that
+        // Find the profile for the authenticated user
+        const profile = await Profile.findOne({ user: mongoose.Types.ObjectId(req.user.id) })
+            .populate('user', ['name']);
 
-		res.json(profile.populate('user', [ 'name', 'avatar' ]));
-	} catch (err) {
-		console.error(err.message);
-		res.status(500).send('Server Error');
-	}
+        if (!profile) {
+            return res.status(404).json({ msg: 'No profile found for the user' });
+        }
+
+        res.json(profile);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
 });
+
 
 // @router      POST apis/profiles
 // @desc        update or create users profile
@@ -49,6 +51,7 @@ router.post('/', [
 	[ requireSkills, requireStatus ],
 	async (req, res) => {
 		const errors = validationResult(req);
+		console.log("SERVER OUTPUT")
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() }); // these are the errors from the check
 		}
@@ -76,9 +79,9 @@ router.post('/', [
 		// make entries
 		// check if object.entries => no entry
 		// check if we have value for the entry
-		console.log(skills, status);
+		console.log({ skills, status });
 		// we donot have skills in this form
-
+		// We have to pass in a user
 		const profileFields = {
 			user: req.user.id,
 			company,
@@ -140,9 +143,9 @@ router.get('/all', async (req, res) => {
 // @router      GET apis/profiles/user/:user_id
 // @desc        get profile of a specific user
 // @access      PUBLIC => no auth middleware
-router.get('/user/:userId', async (req, res) => {
+router.get('/user/:profileId', async (req, res) => {
 	try {
-		const profile = await Profile.findById(req.params.userId).populate('user', [ 'name', 'avatar' ]);
+		const profile = await Profile.findById(mongoose.Types.ObjectId(req.params.profileId)).populate('user', [ 'name', 'avatar' ])
 
 		if (!profile) {
 			return res.status(404).send('Profile not found for this user');
@@ -224,10 +227,6 @@ router.put('/experience', [ auth, [ requireCompany, requireTitle, requireFrom ] 
 // @access      PRIVATE
 router.delete('/experience/:experienceId', auth, async (req, res) => {
 	try {
-		// to delete an exp =>
-		// find the profile of the user => <req className="user id"></req>
-		// res.json(profile)
-
 		let profile = await Profile.findOne({ user: req.user.id });
 
 		// profile.experience.filter( exp => exp.id === experienceId) => filter out the required experience
