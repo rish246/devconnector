@@ -42,7 +42,7 @@ const Signup = () => {
     };
 
     if (isAuthenticated) {
-        history.push("/dashboard");
+        history.push("/posts");
     }
 
     return (

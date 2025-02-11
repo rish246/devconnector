@@ -4,14 +4,13 @@ import { Link, useParams } from "react-router-dom";
 import { getProfileById } from "../../slices/profiles";
 import Spinner from "../../components/Spinner";
 
-const ShowProfile = () => {
+const ShowProfile = ({ id }) => {
     const dispatch = useDispatch();
-    const { id } = useParams();
     const { profile } = useSelector((state) => state.profile);
 
     useEffect(() => {
         dispatch(getProfileById(id));
-    }, [dispatch, id]);
+    }, [dispatch]);
 
     const renderSkills = (skills) => {
         return skills.map((skill, index) => (

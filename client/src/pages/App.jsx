@@ -62,7 +62,9 @@ class App extends React.Component {
                             <Route
                                 path="/profiles/:id"
                                 exact
-                                component={ShowProfile}
+                                component={({ match }) => (
+                                    <ShowProfile id={match.params.id} />
+                                )}
                             />
                             <Route
                                 path="/posts/:postId"

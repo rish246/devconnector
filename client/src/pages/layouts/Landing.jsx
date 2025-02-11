@@ -1,8 +1,16 @@
 // this will be our landing page
 import React from "react";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
 
 function Landing() {
+    console.log("Render");
+    const { isAuthenticated } = useSelector((state) => state.auth);
+    const history = useHistory();
+    if (isAuthenticated) {
+        history.push("/posts");
+    }
+
     return (
         <section className="landing">
             <div className="dark-overlay">

@@ -11,11 +11,12 @@ import Spinner from "../../components/Spinner";
 import DashboardActions from "./DashboardActions";
 import Education from "./Education";
 import Experience from "./Experience";
+import ShowProfile from "../Profiles/ShowProfile";
 
 const Dashboard = () => {
     const dispatch = useDispatch();
     const { profile, loading } = useSelector((state) => state.profile);
-
+    const { user } = useSelector((state) => state.auth);
     // wrong way of using useEffect
     useEffect(() => {
         dispatch(fetchMyProfile());
@@ -37,20 +38,7 @@ const Dashboard = () => {
     return (
         <Fragment>
             <DashboardActions />
-            <Education
-                education={profile.education}
-                onDelete={(id) => dispatch(deleteEducation(id))}
-            />
-            <Experience
-                experience={profile.experience}
-                onDelete={(id) => dispatch(deleteExperience(id))}
-            />
-            <button
-                className="btn btn-danger"
-                onClick={() => dispatch(deleteProfile(profile._id))}
-            >
-                Delete Profile
-            </button>
+            <ShowProfile id={user.id} />
         </Fragment>
     );
 };
