@@ -10,9 +10,9 @@ import { ValidateRequired } from "../../utils/validators";
 const PostCreate = ({ handleSubmit }) => {
     const dispatch = useDispatch();
     const { formData, errors, handleChange } = useForm(
-        { postContent: "" },
+        { text: "" },
         {
-            postContent: [new ValidateRequired()],
+            text: [new ValidateRequired()],
         }
     );
 
@@ -30,14 +30,14 @@ const PostCreate = ({ handleSubmit }) => {
                 <h3>Say Something...</h3>
             </div>
 
-            <form className="form my-1" onSubmit={onSubmit}>
+            <form className="form my-1" onSubmit={() => onSubmit(formData)}>
                 <FormTextArea
                     rows={5}
                     cols={30}
-                    name="postContent"
-                    errors={errors.postContent}
+                    name="text"
+                    errors={errors.text}
                     placeholder="whats on your mind!"
-                    value={formData.postContent}
+                    value={formData.text}
                     onChange={handleChange}
                 />
                 <input
