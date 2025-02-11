@@ -1,42 +1,53 @@
-import React from 'react';
-import { Field, reduxForm } from 'redux-form';
-import { useDispatch } from 'react-redux';
-import { createPost } from '../../slices/posts';
+import React from "react";
+// import FormField from "../../components/FormField";
+import FormTextArea from "../../components/FormTextArea";
+import { useDispatch } from "react-redux";
+import { createPost } from "../../slices/posts";
+import { useForm } from "../../hooks/use-form";
+import FormField from "../../components/FormField";
+import { ValidateRequired } from "../../utils/validators";
 
 const PostCreate = ({ handleSubmit }) => {
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
+    const { formData, errors, handleChange } = useForm(
+        { postContent: "" },
+        {
+            postContent: [new ValidateRequired()],
+        }
+    );
 
-  const renderTextArea = ({ input, name, cols, rows, placeholder }) => (
-    <textarea name={name} cols={cols} rows={rows} placeholder={placeholder} {...input} />
-  );
+    const onSubmit = (formValues) => {
+        const hasError = Object.values(errors).some((val) => val.length > 0);
+        if (hasError) {
+            return;
+        }
+        dispatch(createPost(formValues));
+    };
 
-  const onSubmit = (formValues) => {
-    dispatch(createPost(formValues));
-  };
+    return (
+        <div className="post-form">
+            <div className="bg-primary p">
+                <h3>Say Something...</h3>
+            </div>
 
-  return (
-    <div className="post-form">
-      <div className="bg-primary p">
-        <h3>Say Something...</h3>
-      </div>
-
-      <form className="form my-1" onSubmit={handleSubmit(onSubmit)}>
-        <Field
-          name="text"
-          cols="30"
-          rows="5"
-          placeholder="Create a post"
-          component={renderTextArea}
-        />
-        <input type="submit" className="btn btn-dark my-1" value="Submit" />
-      </form>
-    </div>
-  );
+            <form className="form my-1" onSubmit={onSubmit}>
+                <FormTextArea
+                    rows={5}
+                    cols={30}
+                    name="postContent"
+                    errors={errors.postContent}
+                    placeholder="whats on your mind!"
+                    value={formData.postContent}
+                    onChange={handleChange}
+                />
+                <input
+                    type="submit"
+                    className="btn btn-dark my-1"
+                    value="Submit"
+                />
+            </form>
+        </div>
+    );
 };
 
-// Wrap the component with redux-form
-const wrappedForm = reduxForm({
-  form: 'addPostForm'
-})(PostCreate);
-
-export default wrappedForm;
+export default PostCreate;

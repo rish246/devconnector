@@ -7,20 +7,21 @@ export const useForm = (initialState, validators) => {
     const [errors, setErrors] = useState(initialErrors);
 
     const handleChange = (e) => {
-        // add in validation here
         setFormData((curData) => ({
             ...curData,
             [e.target.name]: e.target.value,
         }));
 
-        setErrors((curErrors) => ({
-            ...curErrors,
-            [e.target.name]: evaluate(
-                e.target.value,
-                validators[e.target.name],
-                formData
-            ),
-        }));
+        if (validators[e.target.name]) {
+            setErrors((curErrors) => ({
+                ...curErrors,
+                [e.target.name]: evaluate(
+                    e.target.value,
+                    validators[e.target.name],
+                    formData
+                ),
+            }));
+        }
     };
 
     return { formData, errors, handleChange };
