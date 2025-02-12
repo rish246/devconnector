@@ -1,4 +1,6 @@
 import React from "react";
+import Education from "../dashboard/Education";
+import Experience from "../dashboard/Experience";
 
 export default function Profile({ profile }) {
     const {
@@ -16,7 +18,7 @@ export default function Profile({ profile }) {
     } = profile;
     return (
         <div className="profile-grid my-1">
-            <div className="profile-top bg-primary p-2">
+            <div className="profile-top bg-blue-200 p-2">
                 <img className="round-img my-1" src={user.avatar} alt="" />
                 <h1 className="large">{user.name}</h1>
                 <p className="lead">
@@ -90,16 +92,16 @@ export default function Profile({ profile }) {
             </div>
 
             {experience?.length > 0 && (
-                <div className="profile-exp bg-white p-2">
-                    <h2 className="text-primary">Experience</h2>
-                    {renderExperience(experience)}
+                <div className="bg-white p-2">
+                    <h2 className="text-primary mb-4">Experience</h2>
+                    {<Experience experience={experience} />}
                 </div>
             )}
 
             {education?.length > 0 && (
-                <div className="profile-edu bg-white p-2">
-                    <h2 className="text-primary">Education</h2>
-                    {renderEducation(education)}
+                <div className="bg-white p-2">
+                    <h2 className="text-primary mb-4">Education</h2>
+                    <Education education={education} />
                 </div>
             )}
         </div>
@@ -110,48 +112,6 @@ const renderSkills = (skills) => {
     return skills.map((skill, index) => (
         <div key={index} className="p-1">
             <i className="fa fa-check" /> {skill}
-        </div>
-    ));
-};
-
-const renderExperience = (experience) => {
-    return experience.map((exp, index) => (
-        <div key={index}>
-            <h3 className="text-dark">{exp.company}</h3>
-            <p>
-                {exp.from} - {exp.to || "Current"}
-            </p>
-            <p>
-                <strong>Position: </strong>
-                {exp.position}
-            </p>
-            <p>
-                <strong>Description: </strong>
-                {exp.description}
-            </p>
-        </div>
-    ));
-};
-
-const renderEducation = (education) => {
-    return education.map((edu, index) => (
-        <div key={index}>
-            <h3>{edu.school}</h3>
-            <p>
-                {edu.from} - {edu.to || "current"}
-            </p>
-            <p>
-                <strong>Degree: </strong>
-                {edu.degree}
-            </p>
-            <p>
-                <strong>Field Of Study: </strong>
-                {edu.fieldOfStudy}
-            </p>
-            <p>
-                <strong>Description: </strong>
-                {edu.description}
-            </p>
         </div>
     ));
 };

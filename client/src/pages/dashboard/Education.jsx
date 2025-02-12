@@ -1,77 +1,64 @@
 import React from "react";
-import Table from "../../components/Table";
-import classNames from "classnames";
-import { FaTrash } from "react-icons/fa";
-// import { TrashIcon } from "@heroicons/react/24/outline";
-const TableHeader = ({ title }) => {
-    return (
-        <th className="bg-blue-50 border py-3 text-sm font-semibold text-gray-700 rounded-2xl text-center">
-            {title}
-        </th>
-    );
+
+const Education = ({ education }) => {
+    return education.map((edu, index) => (
+        <div
+            key={index}
+            className="mb-6 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+        >
+            <div className="flex items-start gap-4">
+                {/* School Initial/Logo */}
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-green-600 font-bold text-lg">
+                        {edu.school[0].toUpperCase()}
+                    </span>
+                </div>
+
+                <div className="flex-1">
+                    {/* School and Degree */}
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                {edu.school}
+                            </h3>
+                            <p className="text-gray-700">{edu.degree}</p>
+                        </div>
+                        <span className="text-sm pl-2 text-gray-500">
+                            {formatDate(edu.from)} -{" "}
+                            {edu.to ? formatDate(edu.to) : "Present"}
+                        </span>
+                    </div>
+
+                    {/* Field of Study */}
+                    {edu.fieldOfStudy && (
+                        <p className="mt-2 text-sm text-gray-500">
+                            <strong>Field of Study: </strong>
+                            {edu.fieldOfStudy}
+                        </p>
+                    )}
+
+                    {/* Description */}
+                    {edu.description && (
+                        <div className="mt-4 text-gray-700">
+                            <ul className="list-disc pl-6 space-y-2">
+                                {edu.description.split("\n").map((line, i) => (
+                                    <li key={i}>{line}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    ));
 };
 
-export function Education({ education, onDelete, className }) {
-    const config = [
-        {
-            name: "School",
-            render: (school) => <td className="px-4 py-2 border">{school}</td>,
-            header: () => <TableHeader title="School" />,
-        },
-        {
-            name: "Degree",
-            render: (degree) => <td className="px-4 py-2 border">{degree}</td>,
-            header: () => <TableHeader title="Degree" />,
-        },
-        {
-            name: "Years",
-            render: ({ from, to }) => (
-                <td className="px-4 py-2 border">
-                    {from} - {to || "Current"}
-                </td>
-            ),
-            header: () => <TableHeader title="Years" />,
-        },
-        {
-            name: "Actions",
-            render: (id) => (
-                <td className="px-4 py-3 text-center">
-                    <button
-                        className="p-2 text-red-600 transition-colors duration-200 rounded-md hover:bg-red-100 hover:text-red-700 hover:cursor-pointer"
-                        onClick={() => onDelete(id)}
-                    >
-                        {/* <TrashIcon className="w-5 h-5" /> */}
-                        <FaTrash />
-                    </button>
-                </td>
-            ),
-            header: () => <TableHeader title="Actions" />,
-        },
-    ];
-
-    const data = education.map(({ school, degree, from, to, id }) => {
-        return [school, degree, { from, to }, id];
+// Helper function for date formatting
+const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
     });
-
-    if (data.length === 0) {
-        return null;
-    }
-
-    const finalClassName = classNames(
-        "rounded-lg shadow-md w-full overflow-hidden",
-        className
-    );
-
-    return (
-        <div className="my-6">
-            <Table
-                config={config}
-                data={data}
-                className={finalClassName}
-                headerClassName="bg-blue-50 border-b"
-            />
-        </div>
-    );
-}
+};
 
 export default Education;
