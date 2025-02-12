@@ -4,12 +4,11 @@ import FormTextArea from "../../components/FormTextArea";
 import { useDispatch } from "react-redux";
 import { createPost } from "../../slices/posts";
 import { useForm } from "../../hooks/use-form";
-import FormField from "../../components/FormField";
 import { ValidateRequired } from "../../utils/validators";
 
 const PostCreate = ({ handleSubmit }) => {
     const dispatch = useDispatch();
-    const { formData, errors, handleChange } = useForm(
+    const { formData, errors, handleChange, resetForm } = useForm(
         { text: "" },
         {
             text: [new ValidateRequired()],
@@ -21,7 +20,9 @@ const PostCreate = ({ handleSubmit }) => {
         if (hasError) {
             return;
         }
-        dispatch(createPost(formValues));
+        console.log({ formValues });
+        dispatch(createPost(formValues)); // This is created
+        resetForm(); // ohh..
     };
 
     return (
@@ -30,7 +31,13 @@ const PostCreate = ({ handleSubmit }) => {
                 <h3>Say Something...</h3>
             </div>
 
-            <form className="form my-1" onSubmit={() => onSubmit(formData)}>
+            <form
+                className="form my-1"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    onSubmit(formData);
+                }}
+            >
                 <FormTextArea
                     rows={5}
                     cols={30}

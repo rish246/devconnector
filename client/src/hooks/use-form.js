@@ -24,7 +24,12 @@ export const useForm = (initialState, validators) => {
         }
     };
 
-    return { formData, errors, handleChange };
+    const resetForm = () => {
+        setFormData(initialState);
+        setErrors(initialErrors);
+    };
+
+    return { formData, errors, handleChange, resetForm };
 };
 
 function getInitialErrors(state) {

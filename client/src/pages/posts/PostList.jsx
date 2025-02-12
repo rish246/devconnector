@@ -1,10 +1,25 @@
 import React, { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { createSelector } from "@reduxjs/toolkit";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { getPosts, likePost, unlikePost, deletePost } from "../../slices/posts";
 import { loadUser } from "../../slices/auth";
 import Spinner from "../../components/Spinner";
+
+const selectPostsState = (state) => state.post;
+const selectAuthState = (state) => state.auth;
+
+const selectPosts = createSelector([selectPostsState], (post) => post.posts);
+
+const selectLoading = createSelector(
+    [selectPostsState],
+    (post) => post.loading
+);
+
+const selectError = createSelector([selectPostsState], (post) => post.error);
+
+const selectUser = createSelector([selectAuthState], (auth) => auth.user);
 
 const PostItem = React.memo(({ post, currentUser }) => {
     const dispatch = useDispatch();
@@ -93,13 +108,25 @@ const PostItem = React.memo(({ post, currentUser }) => {
 
 const PostList = () => {
     const dispatch = useDispatch();
-    const { posts, loading, error } = useSelector((state) => state.post);
-    const user = useSelector((state) => state.auth.user);
+    const posts = useSelector(selectPosts);
+    const loading = useSelector(selectLoading);
+    const error = useSelector(selectError);
+    const user = useSelector(selectUser);
+
+    // Memoized fetch posts
 
     useEffect(() => {
-        dispatch(loadUser());
         dispatch(getPosts());
     }, [dispatch]);
+
+    // // Memoize posts list
+    const memoizedPosts = useCallback(
+        () =>
+            posts.map((post) => (
+                <PostItem key={post._id} post={post} currentUser={user} />
+            )),
+        [posts, user]
+    );
 
     if (loading) return <Spinner />;
 
@@ -117,12 +144,10 @@ const PostList = () => {
                     No posts found. Be the first to create one!
                 </div>
             ) : (
-                posts.map((post) => (
-                    <PostItem key={post._id} post={post} currentUser={user} />
-                ))
+                memoizedPosts()
             )}
         </section>
     );
 };
 
-export default PostList;
+export default React.memo(PostList);

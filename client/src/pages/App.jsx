@@ -1,5 +1,5 @@
 import React from "react";
-import { Router, Route } from "react-router-dom";
+import { Router, Route, Switch } from "react-router-dom";
 
 import Header from "./layouts/Header";
 import Landing from "./layouts/Landing";
@@ -9,13 +9,12 @@ import Login from "./auth/Login";
 import Dashboard from "./dashboard/Dashboard";
 import CreateProfile from "./Profiles/CreateProfile";
 import EditProfile from "./Profiles/EditProfile";
-import AddExperience from "./Profiles/AddExperience"; // add exp form
-import AddEducation from "./Profiles/AddEducation"; // add edu form
+import AddExperience from "./Profiles/AddExperience";
+import AddEducation from "./Profiles/AddEducation";
 import Profiles from "./Profiles/Profiles";
 import ShowProfile from "./Profiles/ShowProfile";
 import PostDiscussion from "./posts/PostDiscussion";
 import Posts from "./posts/Posts";
-import { Switch } from "react-router-dom";
 
 class App extends React.Component {
     render() {
