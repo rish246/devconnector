@@ -5,11 +5,12 @@ import { fetchMyProfile } from "../../slices/profiles";
 import Spinner from "../../components/Spinner";
 import DashboardActions from "./DashboardActions";
 import ShowProfile from "../Profiles/ShowProfile";
+import Profile from "../Profiles/Profile";
 
 const Dashboard = () => {
     const dispatch = useDispatch();
     const { profile, loading } = useSelector((state) => state.profile);
-    const { user } = useSelector((state) => state.auth);
+    // const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
         dispatch(fetchMyProfile());
@@ -31,7 +32,7 @@ const Dashboard = () => {
     return (
         <Fragment>
             <DashboardActions />
-            <ShowProfile id={user.id} />
+            <Profile profile={profile} />
         </Fragment>
     );
 };

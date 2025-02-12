@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { getProfileById } from "../../slices/profiles";
 import Spinner from "../../components/Spinner";
+import Profile from "./Profile";
 
 const ShowProfile = ({ id }) => {
     const dispatch = useDispatch();
@@ -64,114 +65,13 @@ const ShowProfile = ({ id }) => {
 
     if (!profile) return <Spinner />;
 
-    const {
-        skills,
-        _id,
-        user,
-        status,
-        experience,
-        education,
-        bio,
-        company,
-        location,
-        website,
-        social,
-    } = profile;
-
     return (
         <section className="container">
             <Link to="/profiles" className="btn btn-light">
                 Back To Profiles
             </Link>
 
-            <div className="profile-grid my-1">
-                <div className="profile-top bg-primary p-2">
-                    <img className="round-img my-1" src={user.avatar} alt="" />
-                    <h1 className="large">{user.name}</h1>
-                    <p className="lead">
-                        {status} {company && `at ${company}`}
-                    </p>
-                    {location && <p>{location}</p>}
-                    <div className="icons my-1">
-                        {website && (
-                            <a
-                                href={website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <i className="fas fa-globe fa-2x" />
-                            </a>
-                        )}
-                        {social?.twitter && (
-                            <a
-                                href={social.twitter}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <i className="fab fa-twitter fa-2x" />
-                            </a>
-                        )}
-                        {social?.facebook && (
-                            <a
-                                href={social.facebook}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <i className="fab fa-facebook fa-2x" />
-                            </a>
-                        )}
-                        {social?.linkedin && (
-                            <a
-                                href={social.linkedin}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <i className="fab fa-linkedin fa-2x" />
-                            </a>
-                        )}
-                        {social?.youtube && (
-                            <a
-                                href={social.youtube}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <i className="fab fa-youtube fa-2x" />
-                            </a>
-                        )}
-                        {social?.instagram && (
-                            <a
-                                href={social.instagram}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <i className="fab fa-instagram fa-2x" />
-                            </a>
-                        )}
-                    </div>
-                </div>
-
-                <div className="profile-about bg-light p-2">
-                    <h2 className="text-primary">{user.name}'s bio</h2>
-                    <p>{bio || "No bio provided"}</p>
-                    <div className="line" />
-                    <h2 className="text-primary">Skill Set</h2>
-                    <div className="skills">{renderSkills(skills)}</div>
-                </div>
-
-                {experience?.length > 0 && (
-                    <div className="profile-exp bg-white p-2">
-                        <h2 className="text-primary">Experience</h2>
-                        {renderExperience(experience)}
-                    </div>
-                )}
-
-                {education?.length > 0 && (
-                    <div className="profile-edu bg-white p-2">
-                        <h2 className="text-primary">Education</h2>
-                        {renderEducation(education)}
-                    </div>
-                )}
-            </div>
+            <Profile profile={profile} />
         </section>
     );
 };
