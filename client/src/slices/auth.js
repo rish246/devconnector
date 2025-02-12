@@ -1,20 +1,8 @@
 import axios from "axios";
 import history from "../history";
 import server from "../apis/server";
-
-import {
-    REGISTER_FAIL,
-    REGISTER_SUCCESS,
-    LOGIN_SUCCESS,
-    LOGIN_FAIL,
-    USER_LOADED,
-    AUTH_ERROR,
-    LOGOUT,
-    CLEAR_PROFILE,
-} from "./types";
 import { setAlert } from "./alerts";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addComment } from "./posts";
 
 const initialState = {
     isAuthenticated: false,
@@ -26,23 +14,28 @@ const initialState = {
 
 export const signInUser = createAsyncThunk(
     "auth/signInUser",
-    async ({ email, password }, { dispatch, rejectWithValue }) => {
+    async ({ email, password }, { rejectWithValue }) => {
         const config = {
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
         };
-
         const body = { email, password };
 
         try {
-            const response = await server.post("/auth", body, config);
-            dispatch(loginSuccess(response.data.token));
-            dispatch(loadUser());
-            return response.data;
+            // First, post to /auth to get the token
+            const loginResponse = await server.post("/auth", body, config);
+            const token = loginResponse.data.token;
+            localStorage.setItem("token", token);
+            server.defaults.headers.common["x-auth-token"] = token;
+
+            // Next, load the user data using the token
+            const userResponse = await server.get("/auth");
+            return { token, user: userResponse.data };
         } catch (err) {
             const errors = err.response?.data?.errors || [{ msg: err.message }];
-            errors.forEach((error) => dispatch(setAlert(error.msg, "danger")));
+            errors.forEach((error) => {
+                // Show alerts (side effect); these alerts can be managed by their own slice/middleware
+                setAlert(error.msg, "danger");
+            });
             return rejectWithValue(errors);
         }
     }
@@ -50,21 +43,27 @@ export const signInUser = createAsyncThunk(
 
 export const signUpUser = createAsyncThunk(
     "users/signUpUser",
-    async ({ name, email, password }, { dispatch, rejectWithValue }) => {
+    async ({ name, email, password }, { rejectWithValue }) => {
         const config = {
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
         };
         const body = { name, email, password };
 
         try {
+            // Create the user and get the token in the response
             const response = await server.post("/users", body, config);
-            localStorage.setItem("token", response.data.token);
-            return response.data;
+            const token = response.data.token;
+            localStorage.setItem("token", token);
+            server.defaults.headers.common["x-auth-token"] = token;
+
+            // Load user data with the token
+            const userResponse = await server.get("/auth");
+            return { token, user: userResponse.data };
         } catch (err) {
             const errors = err.response?.data?.errors || [{ msg: err.message }];
-            errors.forEach((error) => dispatch(setAlert(error.msg, "danger")));
+            errors.forEach((error) => {
+                setAlert(error.msg, "danger");
+            });
             return rejectWithValue(errors);
         }
     }
@@ -72,13 +71,13 @@ export const signUpUser = createAsyncThunk(
 
 export const loadUser = createAsyncThunk(
     "auth/loadUser",
-    async (_, { dispatch, rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
         if (localStorage.token) {
             server.defaults.headers.common["x-auth-token"] = localStorage.token;
         }
 
         try {
-            const response = await server.get("/auth"); // gets the token
+            const response = await server.get("/auth");
             return response.data;
         } catch (err) {
             return rejectWithValue(err);
@@ -88,23 +87,29 @@ export const loadUser = createAsyncThunk(
 
 export const signOutUser = createAsyncThunk(
     "auth/signOutUser",
-    async (_, { dispatch }) => {
-        localStorage.removeItem("token");
-        dispatch(logout());
-        history.push("/");
+    async (_, { rejectWithValue }) => {
+        try {
+            localStorage.removeItem("token");
+            delete server.defaults.headers.common["x-auth-token"];
+            history.push("/");
+            return; // Nothing to return
+        } catch (err) {
+            return rejectWithValue(err);
+        }
     }
 );
 
 const authSlice = createSlice({
-    initialState,
     name: "auth",
+    initialState,
     reducers: {
+        // These reducers can be used if you want to manually change state
         logout: (state) => {
             state.isAuthenticated = false;
             state.user = null;
             state.loading = false;
             state.error = null;
-            state.token = undefined;
+            state.token = null;
         },
         setActiveUser: (state, action) => {
             state.user = action.payload;
@@ -116,7 +121,7 @@ const authSlice = createSlice({
             state.loading = false;
             state.isAuthenticated = false;
             state.user = null;
-            state.token = undefined;
+            state.token = null;
         },
         loginSuccess: (state, action) => {
             state.error = [];
@@ -128,6 +133,7 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            // signInUser
             .addCase(signInUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -135,12 +141,38 @@ const authSlice = createSlice({
             .addCase(signInUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = true;
-                state.user = action.payload;
+                state.token = action.payload.token;
+                state.user = action.payload.user;
             })
             .addCase(signInUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
+            // signUpUser
+            .addCase(signUpUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.isAuthenticated = true;
+                state.token = action.payload.token;
+                state.user = action.payload.user;
+                state.error = [];
+            })
+            .addCase(signUpUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // loadUser
+            .addCase(loadUser.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(loadUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+            })
+            .addCase(loadUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // signOutUser
             .addCase(signOutUser.pending, (state) => {
                 state.loading = true;
             })
@@ -148,29 +180,9 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = false;
                 state.user = null;
+                state.token = null;
             })
             .addCase(signOutUser.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(signUpUser.fulfilled, (state, action) => {
-                state.user = action.payload;
-                state.isAuthenticated = true;
-                state.loading = false;
-                state.error = [];
-            })
-            .addCase(signUpUser.rejected, (state, action) => {
-                state.error = action.payload;
-                state.loading = false;
-            })
-            .addCase(loadUser.pending, (state, action) => {
-                state.loading = true;
-            })
-            .addCase(loadUser.fulfilled, (state, action) => {
-                state.loading = false;
-                state.token = action.payload.token;
-            })
-            .addCase(loadUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
