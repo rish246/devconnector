@@ -1,4 +1,5 @@
 import React from "react";
+import Card from "../Card/Card";
 import { v4 as uuid } from "uuid";
 import { Link } from "react-router-dom";
 
@@ -20,7 +21,7 @@ export default function ProfileCard({ profile }) {
     };
 
     return (
-        <div class="profile bg-light" key={_id}>
+        <Card className={"profile h-70"}>
             <img class="round-img" src={user.avatar} />
             <div>
                 <h2>{user.name || "User"}</h2>
@@ -34,6 +35,6 @@ export default function ProfileCard({ profile }) {
             </div>
 
             <ul>{renderSkills(skills)}</ul>
-        </div>
+        </Card>
     );
 }
