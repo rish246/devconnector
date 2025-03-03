@@ -26,7 +26,7 @@ const PostCreate = ({ handleSubmit }) => {
     };
 
     return (
-        <div className="post-form">
+        <div className="post-form p-0 m-0">
             <div className="bg-primary p">
                 <h3>Say Something...</h3>
             </div>

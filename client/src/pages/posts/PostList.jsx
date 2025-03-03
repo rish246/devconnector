@@ -117,7 +117,7 @@ const PostList = () => {
         );
 
     return (
-        <section className="container">
+        <section>
             {posts.length === 0 ? (
                 <div className="alert alert-info">
                     No posts found. Be the first to create one!
